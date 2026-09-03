@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Respira - App para parar de fumar</title>
     <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230b3b5c'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='%23fff'%3E🚭%3C/text%3E%3C/svg%3E" />
     <style>
         /* ========== RESET ========== */
         * {
@@ -438,19 +438,19 @@
 
 <script>
 // ============================================================
-// 1. COLE AQUI SUAS CHAVES DO FIREBASE
+// 1. CONFIGURAÇÃO DO FIREBASE (com suas chaves)
 // ============================================================
 const firebaseConfig = {
-  apiKey: "COLE_AQUI_SUA_APIKEY",
-  authDomain: "COLE_AQUI_SEU_AUTHDOMAIN",
-  projectId: "COLE_AQUI_SEU_PROJECTID",
-  storageBucket: "COLE_AQUI_SEU_STORAGEBUCKET",
-  messagingSenderId: "COLE_AQUI_SEU_MESSAGINGSENDERID",
-  appId: "COLE_AQUI_SEU_APPID"
+  apiKey: "AIzaSyBKTKw3az-6zAaEYRTG0ctw2ey57h666AI",
+  authDomain: "app-respira-d5ef4.firebaseapp.com",
+  projectId: "app-respira-d5ef4",
+  storageBucket: "app-respira-d5ef4.firebasestorage.app",
+  messagingSenderId: "225988879984",
+  appId: "1:225988879984:web:4a3e3e60a79d44519bf6b5"
 };
 
 // ============================================================
-// 2. INICIALIZAR FIREBASE (corrigido)
+// 2. INICIALIZAR FIREBASE
 // ============================================================
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
