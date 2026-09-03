@@ -68,7 +68,6 @@
       display: block !important;
     }
 
-    /* A tela de login usa flex para centralizar */
     #screen-login.active {
       display: flex !important;
       flex-direction: column;
@@ -313,7 +312,7 @@
     </div>
   </div>
 
-  <!-- TELA SOS (RESPIRAÇÃO) - só aparece ao clicar no botão -->
+  <!-- TELA SOS (RESPIRAÇÃO) -->
   <div id="screen-sos" class="screen flex-center gap-16" style="text-align:center;">
     <h2>🧘 Respire comigo</h2>
     <p>A fissura é como uma onda, ela passa.</p>
@@ -412,7 +411,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // ============================================================
-// ROTEAMENTO PROTEgIDO (COM GARANTIA DE OCULTAÇÃO INICIAL)
+// ROTEAMENTO PROTEgIDO
 // ============================================================
 const PROTECTED_SCREENS = [
   'screen-onboarding',
@@ -425,7 +424,6 @@ const PROTECTED_SCREENS = [
   'screen-history'
 ];
 
-// Função que oculta todas as telas e mostra apenas a desejada
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(el => {
     el.classList.remove('active');
@@ -435,23 +433,19 @@ function showScreen(id) {
   if (target) {
     target.classList.add('active');
     target.style.display = 'block';
-    // Ajuste para tela de login (flex)
     if (id === 'screen-login') {
       target.style.display = 'flex';
     }
   }
 }
 
-// Função principal de navegação com proteção
 function navigateTo(screenId) {
   console.log('Navegando para:', screenId, 'Usuário:', currentUser ? 'logado' : 'deslogado');
-  
   if (PROTECTED_SCREENS.includes(screenId) && !currentUser) {
     console.warn('Tela protegida, redirecionando para login.');
     showScreen('screen-login');
     return;
   }
-  
   if (screenId === 'screen-login' && currentUser) {
     if (userProfile) {
       showScreen('screen-dashboard');
@@ -460,7 +454,6 @@ function navigateTo(screenId) {
     }
     return;
   }
-  
   showScreen(screenId);
 }
 
@@ -664,7 +657,7 @@ async function renderDashboard() {
 }
 
 // ============================================================
-// BOTÕES DE NAVEGAÇÃO (usam navigateTo)
+// BOTÕES DE NAVEGAÇÃO
 // ============================================================
 
 // SOS
@@ -674,7 +667,6 @@ document.getElementById('btn-sos').addEventListener('click', () => {
   startBreathing();
 });
 
-// Voltar do SOS
 document.getElementById('btn-sos-back').addEventListener('click', () => {
   if (breathInterval) clearInterval(breathInterval);
   navigateTo('screen-dashboard');
@@ -731,33 +723,45 @@ document.getElementById('btn-lessons-back').addEventListener('click', () => {
   navigateTo('screen-dashboard');
 });
 
-// Histórico (CORRIGIDO com exibição detalhada de erro)
+// ================== HISTÓRICO CORRIGIDO (SEM ÍNDICES) ==================
 document.getElementById('btn-go-history').addEventListener('click', async () => {
   const container = document.getElementById('history-content');
   container.innerHTML = 'Carregando...';
   try {
-    const logs = await db.collection('cigaretteLogs')
+    // Busca sem orderBy
+    const logsSnap = await db.collection('cigaretteLogs')
       .where('userId', '==', currentUser.uid)
-      .orderBy('timestamp', 'desc')
-      .limit(10)
       .get();
-    const cravings = await db.collection('cravingLogs')
+    const cravingsSnap = await db.collection('cravingLogs')
       .where('userId', '==', currentUser.uid)
-      .orderBy('timestamp', 'desc')
-      .limit(10)
       .get();
 
-    let html = '<h3>Últimos cigarros</h3>';
-    if (logs.empty) html += '<p>Nenhum cigarro registrado.</p>';
-    logs.forEach(doc => {
+    // Converte para array e ordena no frontend
+    let logs = [];
+    logsSnap.forEach(doc => {
       const d = doc.data();
+      logs.push({ ...d, id: doc.id, timestamp: d.timestamp?.toDate?.() || new Date() });
+    });
+    logs.sort((a, b) => b.timestamp - a.timestamp);
+    logs = logs.slice(0, 10);
+
+    let cravings = [];
+    cravingsSnap.forEach(doc => {
+      const d = doc.data();
+      cravings.push({ ...d, id: doc.id, timestamp: d.timestamp?.toDate?.() || new Date() });
+    });
+    cravings.sort((a, b) => b.timestamp - a.timestamp);
+    cravings = cravings.slice(0, 10);
+
+    let html = '<h3>Últimos cigarros</h3>';
+    if (logs.length === 0) html += '<p>Nenhum cigarro registrado.</p>';
+    logs.forEach(d => {
       html += `<div class="card"><strong>${d.context || 'Contexto'}</strong> - Vontade: ${d.craving}/10 - ${d.emotion || ''}</div>`;
     });
 
     html += '<h3>Últimas fissuras vencidas</h3>';
-    if (cravings.empty) html += '<p>Nenhuma fissura registrada.</p>';
-    cravings.forEach(doc => {
-      const d = doc.data();
+    if (cravings.length === 0) html += '<p>Nenhuma fissura registrada.</p>';
+    cravings.forEach(d => {
       html += `<div class="card"><strong>${d.trigger || 'Gatilho'}</strong> - Intensidade: ${d.intensity}/10 - Estratégia: ${d.strategyUsed}</div>`;
     });
     container.innerHTML = html;
@@ -767,6 +771,7 @@ document.getElementById('btn-go-history').addEventListener('click', async () => 
   }
   navigateTo('screen-history');
 });
+// =====================================================================
 
 document.getElementById('btn-history-back').addEventListener('click', () => {
   navigateTo('screen-dashboard');
@@ -918,7 +923,7 @@ const lessonsData = [
   { title: 'Prevenção de recaída', content: 'Planeje situações de risco.' },
 ];
 
-console.log('🚀 App Respira carregado com roteamento protegido e histórico corrigido!');
+console.log('🚀 App Respira carregado com histórico corrigido (sem índices)!');
 </script>
 
 </body>
