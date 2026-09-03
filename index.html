@@ -63,10 +63,11 @@
     @media (max-width:480px) { #root { padding:16px; border-radius:24px; } .stat-number { font-size:26px; } .btn-sos { font-size:18px; padding:18px; } }
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:10px; }
-    .audio-upload { display:flex; gap:8px; align-items:center; margin:12px 0; }
-    .audio-upload input[type="file"] { flex:1; padding:8px; border:1px solid #e2e8f0; border-radius:12px; font-size:14px; }
-    .audio-upload button { padding:8px 16px; background:#0b3b5c; color:white; border:none; border-radius:12px; cursor:pointer; }
-    .plan-badge { background:#0b3b5c; color:white; padding:6px 12px; border-radius:50px; font-size:12px; display:inline-block; margin-bottom:8px; }
+
+    .audio-upload { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+    .audio-upload .btn { flex:1; min-width:80px; margin-bottom:0; }
+    .audio-upload input[type="file"] { display:none; }
+    .plan-badge { background:#0b3b5c; color:white; padding:4px 12px; border-radius:50px; font-size:12px; display:inline-block; margin-top:4px; }
   </style>
 </head>
 <body>
@@ -91,12 +92,11 @@
     </div>
   </div>
 
-  <!-- ONBOARDING (com novos campos) -->
+  <!-- ONBOARDING (com áudio e novos campos) -->
   <div id="screen-onboarding" class="screen">
     <h2>Vamos começar 👋</h2>
     <p class="subtitle">Responda para personalizar seu plano.</p>
     <div id="onboarding-step1">
-      <!-- Campos existentes -->
       <label>Quantos cigarros por dia?</label>
       <select id="onboard-cigarettes">
         <option value="5">Menos de 5</option>
@@ -118,20 +118,23 @@
         <option value="10">6 a 10 anos</option>
         <option value="15">Mais de 10 anos</option>
       </select>
-      
+
       <!-- NOVO: Custo da carteira -->
       <label>💰 Custo da carteira de cigarros (R$)</label>
       <input type="number" id="onboard-cost" placeholder="Ex: 12,00" step="0.01" min="0" value="12.00" />
 
-      <!-- NOVO: Gravador de áudio motivacional -->
-      <label>🎤 Grave um áudio motivacional (opcional)</label>
+      <!-- ÁUDIO: Gravação ou Upload -->
+      <label>🎤 Grave ou envie um áudio motivacional (opcional)</label>
       <div class="audio-upload">
+        <button class="btn btn-sm btn-outline" id="btn-start-recording" style="flex:1;">🔴 Gravar</button>
+        <button class="btn btn-sm btn-outline" id="btn-stop-recording" style="flex:1;" disabled>⏹ Parar</button>
+        <button class="btn btn-sm btn-outline" id="btn-play-recorded" style="flex:1;" disabled>▶ Ouvir</button>
+        <button class="btn btn-sm btn-outline" id="btn-upload-audio" style="flex:1;">📤 Upload</button>
         <input type="file" id="onboard-audio" accept="audio/*" />
-        <button id="btn-play-audio" disabled>▶ Ouvir</button>
       </div>
-      <p style="font-size:12px; color:#94a3b8;">Grave uma mensagem para ouvir na fissura (máx. 30s).</p>
+      <p style="font-size:12px; color:#94a3b8;">Grave (máx. 30s) ou envie um áudio motivacional.</p>
 
-      <!-- Gatilhos (adicionados: dor, tédio, ansiedade, tédio) -->
+      <!-- Gatilhos (adicionados: dor, tédio, ansiedade) -->
       <label>Gatilhos (escolha até 4)</label>
       <div class="chip-group" id="trigger-group">
         <span class="chip" data-value="cafe">☕ Café</span>
@@ -175,7 +178,6 @@
       <div class="card" style="cursor:default;"><div class="stat-number" id="dash-money">R$ 0</div><div class="stat-label">Economizados</div></div>
     </div>
     <div class="card" style="cursor:default;"><div class="stat-number" id="dash-cigarettes-avoided">0</div><div class="stat-label">Cigarros não fumados</div></div>
-    <!-- Se "Hoje" mostramos alerta de suporte intensivo -->
     <div id="intensive-support" style="display:none; background:#fef3c7; padding:12px; border-radius:16px; margin-bottom:12px; text-align:center; font-size:14px; color:#92400e;">
       ⚡ Você está no plano <strong>"Hoje"</strong> – suporte intensivo ativado. Use o SOS sempre que precisar.
     </div>
@@ -188,6 +190,7 @@
     <div style="margin-top:16px;">
       <button class="btn btn-outline btn-sm" id="btn-go-lessons" style="width:auto;">📚 Lições</button>
       <button class="btn btn-outline btn-sm" id="btn-go-history" style="width:auto;">📊 Histórico</button>
+      <button class="btn btn-outline btn-sm" id="btn-play-motivational" style="width:auto; margin-left:8px;">🎧 Ouvir áudio</button>
     </div>
   </div>
 
@@ -343,6 +346,79 @@ let currentUser = null, userProfile = null, userQuitPlan = null;
 let selectedTriggers = [], selectedStrategyId = null, breathInterval = null;
 
 // ============================================================
+// ÁUDIO - GRAVAÇÃO E UPLOAD
+// ============================================================
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedAudioBase64 = null;
+
+// Iniciar gravação
+document.getElementById('btn-start-recording').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const reader = new FileReader();
+      reader.onload = () => {
+        recordedAudioBase64 = reader.result;
+        document.getElementById('btn-play-recorded').disabled = false;
+        document.getElementById('btn-play-recorded').dataset.audio = recordedAudioBase64;
+        alert('Áudio gravado com sucesso!');
+      };
+      reader.readAsDataURL(audioBlob);
+      stream.getTracks().forEach(track => track.stop());
+    };
+    mediaRecorder.start();
+    document.getElementById('btn-start-recording').disabled = true;
+    document.getElementById('btn-stop-recording').disabled = false;
+  } catch (e) {
+    alert('Permissão de microfone necessária para gravar.');
+    console.error(e);
+  }
+});
+
+// Parar gravação
+document.getElementById('btn-stop-recording').addEventListener('click', () => {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    document.getElementById('btn-start-recording').disabled = false;
+    document.getElementById('btn-stop-recording').disabled = true;
+  }
+});
+
+// Ouvir áudio gravado
+document.getElementById('btn-play-recorded').addEventListener('click', function() {
+  const audioBase64 = this.dataset.audio;
+  if (audioBase64) {
+    const audio = new Audio(audioBase64);
+    audio.play();
+  }
+});
+
+// Upload de arquivo (substitui o input oculto)
+document.getElementById('btn-upload-audio').addEventListener('click', () => {
+  document.getElementById('onboard-audio').click();
+});
+
+// Quando o arquivo for selecionado
+document.getElementById('onboard-audio').addEventListener('change', function() {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      recordedAudioBase64 = reader.result;
+      document.getElementById('btn-play-recorded').disabled = false;
+      document.getElementById('btn-play-recorded').dataset.audio = recordedAudioBase64;
+      alert('Áudio carregado!');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ============================================================
 // ESTRATÉGIAS
 // ============================================================
 const strategies = [
@@ -360,7 +436,7 @@ const strategies = [
 ];
 
 // ============================================================
-// CHIPS (gatilhos)
+// CHIPS (gatilhos) - até 4
 // ============================================================
 document.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', function() {
@@ -435,7 +511,7 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 // ============================================================
-// ONBOARDING (com novos campos)
+// ONBOARDING (com áudio e novos campos)
 // ============================================================
 document.getElementById('btn-finish-onboarding').addEventListener('click', async () => {
   if (!currentUser) { alert('Faça login primeiro.'); return; }
@@ -451,16 +527,8 @@ document.getElementById('btn-finish-onboarding').addEventListener('click', async
 
   if (selectedTriggers.length === 0) { alert('Escolha pelo menos um gatilho.'); return; }
 
-  // Processar áudio (salvar como base64 ou URL)
-  const audioFile = document.getElementById('onboard-audio').files[0];
-  let audioData = null;
-  if (audioFile) {
-    const reader = new FileReader();
-    audioData = await new Promise((resolve) => {
-      reader.onload = () => resolve(reader.result);
-      reader.readAsDataURL(audioFile);
-    });
-  }
+  // Áudio gravado ou enviado
+  const audioData = recordedAudioBase64 || null;
 
   const profile = {
     userId: currentUser.uid,
@@ -471,7 +539,7 @@ document.getElementById('btn-finish-onboarding').addEventListener('click', async
     quitDate: quitDate ? quitDate.toISOString() : null,
     quitMode: quitOption,
     costPerPack: cost,
-    audioMotivacional: audioData || null,
+    audioMotivacional: audioData,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
@@ -520,7 +588,6 @@ async function renderDashboard() {
   document.getElementById('dash-money').textContent = `R$ ${(counter.moneySaved || 0).toFixed(2)}`;
   document.getElementById('dash-cigarettes-avoided').textContent = counter.cigarettesAvoided || 0;
 
-  // Exibir suporte intensivo se "Hoje"
   const isToday = userProfile?.quitMode === 'today';
   document.getElementById('intensive-support').style.display = isToday ? 'block' : 'none';
 }
@@ -533,6 +600,16 @@ function updatePlanBadge() {
   else if (mode === 'reduce') badge.textContent = '📉 Plano: Redução gradual';
   else badge.textContent = `📅 Plano: ${mode} dias`;
 }
+
+// Ouvir áudio motivacional (do perfil)
+document.getElementById('btn-play-motivational').addEventListener('click', function() {
+  if (userProfile && userProfile.audioMotivacional) {
+    const audio = new Audio(userProfile.audioMotivacional);
+    audio.play();
+  } else {
+    alert('Nenhum áudio motivacional cadastrado.');
+  }
+});
 
 // ============================================================
 // SOS - CARDÁPIO
@@ -653,7 +730,7 @@ async function saveCravingLog(strategyId, intensity, smoked) {
 }
 
 // ============================================================
-// DEMAIS BOTÕES (Fumei, etc.) - mantidos iguais
+// DEMAIS BOTÕES (Fumei, etc.)
 // ============================================================
 document.getElementById('btn-register-cigarette').addEventListener('click', () => {
   navigateTo('screen-register-cigarette');
@@ -762,7 +839,7 @@ document.getElementById('btn-go-history').addEventListener('click', async () => 
 });
 document.getElementById('btn-history-back').addEventListener('click', () => navigateTo('screen-dashboard'));
 
-console.log('🚀 App com plano personalizado e novos campos carregado!');
+console.log('🚀 App com gravação de áudio e plano personalizado carregado!');
 </script>
 </body>
 </html>
