@@ -656,6 +656,37 @@
                 loginMessage.textContent = '';
             }
         });
+*******
+	auth.onAuthStateChanged(async (user) => {
+	  console.log('Auth state changed:', user ? 'logado' : 'deslogado');
+	  if (user) {
+	    currentUser = user;
+    	    try {
+      	      const doc = await db.collection('users').doc(user.uid).get();
+              if (doc.exists) {
+                 userProfile = doc.data();
+                 userQuitPlan = await db.collection('quitPlans').doc(user.uid).get().then(snap => snap.exists ? snap.data() : null);
+                 showScreen('screen-dashboard');
+                 renderDashboard();
+              } else {
+        // Perfil não existe, vai para onboarding
+                showScreen('screen-onboarding');
+              }
+            } catch (error) {
+              console.error('Erro ao buscar perfil:', error);
+      // Se der erro (ex: permissão), tenta novamente ou mostra dashboard mesmo assim
+      // Mas aqui vamos redirecionar para onboarding para criar o perfil
+              showScreen('screen-onboarding');
+            }
+          } else {
+            currentUser = null;
+            userProfile = null;
+            userQuitPlan = null;
+            showScreen('screen-login');
+          }
+        });
+
+
 
         // ============================================================
         // 8. SALVAR ONBOARDING
