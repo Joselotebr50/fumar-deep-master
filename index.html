@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230b3b5c'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='%23fff'%3E🚭%3C/text%3E%3C/svg%3E" />
   <style>
-    /* ========== RESET E BASE ========== */
+    /* ========== RESET ========== */
     * {
       margin: 0;
       padding: 0;
@@ -65,47 +65,30 @@
       animation: fade 0.3s ease;
     }
     .screen.active {
-      display: block;
-    }
-    @keyframes fade {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
+      display: block !important;
     }
 
-    /* ========== TELA DE LOGIN ========== */
-    #screen-login {
-      display: none; /* será ativada pelo JS */
+    /* A tela de login usa flex para centralizar */
+    #screen-login.active {
+      display: flex !important;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 70vh;
     }
-    #screen-login.active {
-      display: flex;
-    }
-    #screen-login h1 {
-      font-size: 28px;
-      margin-bottom: 4px;
-    }
-    #screen-login p {
-      color: #64748b;
-      margin-bottom: 24px;
-    }
-    #screen-login input {
-      width: 100%;
+
+    @keyframes fade {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* ========== DEMAIS ESTILOS (já existentes) ========== */
-    h1, h2, h3, p, .subtitle, input, select, label, .btn, .card, .card-grid, .stat-number, .stat-label,
-    .chip-group, .chip, .breath-circle, .app-header, .user-email, .logout-btn {
-      /* Mantidos os estilos originais, mas com ajustes de layout */
-    }
-    /* (Reaproveito os estilos da versão anterior, mas compacto) */
+    /* ========== ESTILOS GERAIS ========== */
     h1 { font-size: 26px; font-weight: 700; color: #0b3b5c; }
     h2 { font-size: 20px; font-weight: 600; color: #0b3b5c; margin-bottom: 12px; }
     h3 { font-size: 16px; font-weight: 600; color: #1e293b; margin: 16px 0 8px; }
     p { font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 12px; }
     .subtitle { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+
     input, select {
       width: 100%;
       padding: 14px 16px;
@@ -119,6 +102,7 @@
     }
     input:focus, select:focus { border-color: #3b82f6; }
     label { font-size: 14px; font-weight: 500; color: #334155; display: block; margin-bottom: 4px; }
+
     .btn {
       width: 100%;
       padding: 16px;
@@ -150,12 +134,15 @@
     }
     .btn-sos:hover { background: #d97706; transform: scale(1.02); }
     .btn-sm { padding: 10px 16px; font-size: 14px; width: auto; display: inline-block; }
+
     .card { background: #f8fafc; border-radius: 20px; padding: 18px 16px; margin-bottom: 16px; border: 1px solid #e9edf2; }
     .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .stat-number { font-size: 32px; font-weight: 700; color: #0b3b5c; }
     .stat-label { font-size: 13px; color: #64748b; }
+
     .flex-center { display: flex; flex-direction: column; align-items: center; text-align: center; }
     .gap-16 { gap: 16px; }
+
     .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .chip {
       padding: 8px 16px;
@@ -167,6 +154,7 @@
       user-select: none;
     }
     .chip.selected { background: #0b3b5c; color: white; border-color: #0b3b5c; }
+
     .breath-circle {
       width: 120px;
       height: 120px;
@@ -187,6 +175,7 @@
       0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
       50% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
     }
+
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -205,6 +194,7 @@
       cursor: pointer;
     }
     .logout-btn:hover { color: #ef4444; }
+
     @media (max-width: 480px) {
       #root { padding: 16px; border-radius: 24px; }
       .stat-number { font-size: 26px; }
@@ -240,11 +230,10 @@
     </div>
   </div>
 
-  <!-- DEMAIS TELAS (protegidas) -->
+  <!-- TELA DE ONBOARDING -->
   <div id="screen-onboarding" class="screen">
     <h2>Vamos começar 👋</h2>
     <p class="subtitle">Responda algumas perguntas para personalizar seu plano.</p>
-    <!-- conteúdo do onboarding (igual ao anterior) -->
     <div id="onboarding-step1">
       <label>Quantos cigarros você fuma por dia?</label>
       <select id="onboard-cigarettes">
@@ -289,6 +278,7 @@
     </div>
   </div>
 
+  <!-- TELA DASHBOARD -->
   <div id="screen-dashboard" class="screen">
     <div class="app-header">
       <div>
@@ -323,7 +313,7 @@
     </div>
   </div>
 
-  <!-- SOS -->
+  <!-- TELA SOS (RESPIRAÇÃO) - só aparece ao clicar no botão -->
   <div id="screen-sos" class="screen flex-center gap-16" style="text-align:center;">
     <h2>🧘 Respire comigo</h2>
     <p>A fissura é como uma onda, ela passa.</p>
@@ -334,7 +324,7 @@
     <button class="btn btn-outline btn-sm" id="btn-sos-back">Voltar</button>
   </div>
 
-  <!-- Registrar cigarro -->
+  <!-- REGISTRAR CIGARRO -->
   <div id="screen-register-cigarette" class="screen">
     <h2>🚬 Registrar cigarro</h2>
     <label>Contexto / Gatilho</label>
@@ -347,7 +337,7 @@
     <button class="btn btn-outline" id="btn-cancel-cigarette">Cancelar</button>
   </div>
 
-  <!-- Registrar fissura vencida -->
+  <!-- REGISTRAR FISSURA VENCIDA -->
   <div id="screen-register-craving" class="screen">
     <h2>💪 Venci uma fissura!</h2>
     <label>Gatilho</label>
@@ -367,7 +357,7 @@
     <button class="btn btn-outline" id="btn-cancel-craving">Cancelar</button>
   </div>
 
-  <!-- Recaída -->
+  <!-- RECAÍDA -->
   <div id="screen-relapse" class="screen">
     <h2>⚠️ Aconteceu. E tudo bem.</h2>
     <p>Um deslize não apaga todo seu progresso. Vamos aprender com isso.</p>
@@ -383,14 +373,14 @@
     <button class="btn btn-outline" id="btn-cancel-relapse">Voltar</button>
   </div>
 
-  <!-- Lições -->
+  <!-- LIÇÕES -->
   <div id="screen-lessons" class="screen">
     <h2>📚 Lições de apoio</h2>
     <div id="lessons-list"></div>
     <button class="btn btn-outline" id="btn-lessons-back">Voltar</button>
   </div>
 
-  <!-- Histórico -->
+  <!-- HISTÓRICO -->
   <div id="screen-history" class="screen">
     <h2>📊 Histórico</h2>
     <div id="history-content"><p>Carregando...</p></div>
@@ -422,7 +412,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // ============================================================
-// ROTEAMENTO PROTEgIDO
+// ROTEAMENTO PROTEgIDO (COM GARANTIA DE OCULTAÇÃO INICIAL)
 // ============================================================
 const PROTECTED_SCREENS = [
   'screen-onboarding',
@@ -435,17 +425,34 @@ const PROTECTED_SCREENS = [
   'screen-history'
 ];
 
-// Função principal de navegação
+// Função que oculta todas as telas e mostra apenas a desejada
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => {
+    el.classList.remove('active');
+    el.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'block';
+    // Ajuste para tela de login (flex)
+    if (id === 'screen-login') {
+      target.style.display = 'flex';
+    }
+  }
+}
+
+// Função principal de navegação com proteção
 function navigateTo(screenId) {
-  // Verifica se é uma tela protegida e se o usuário não está logado
+  console.log('Navegando para:', screenId, 'Usuário:', currentUser ? 'logado' : 'deslogado');
+  
   if (PROTECTED_SCREENS.includes(screenId) && !currentUser) {
     console.warn('Tela protegida, redirecionando para login.');
     showScreen('screen-login');
     return;
   }
-  // Se for login e usuário já está logado, redireciona para dashboard (ou onboarding)
+  
   if (screenId === 'screen-login' && currentUser) {
-    // Verifica se perfil existe
     if (userProfile) {
       showScreen('screen-dashboard');
     } else {
@@ -453,13 +460,8 @@ function navigateTo(screenId) {
     }
     return;
   }
+  
   showScreen(screenId);
-}
-
-// Função auxiliar para exibir tela (sem bloqueio)
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
 }
 
 // ============================================================
@@ -525,19 +527,16 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 });
 
 // ============================================================
-// AUTH STATE OBSERVER (com roteamento e spinner)
+// AUTH STATE OBSERVER
 // ============================================================
 auth.onAuthStateChanged(async (user) => {
-  // Remove spinner
   document.getElementById('screen-loading').classList.remove('active');
 
   if (user) {
     currentUser = user;
-    // Mostra o email no cabeçalho (se houver)
     const emailEl = document.getElementById('user-email');
     if (emailEl) emailEl.textContent = currentUser.email;
 
-    // Tenta buscar perfil
     try {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists) {
@@ -547,13 +546,11 @@ auth.onAuthStateChanged(async (user) => {
         navigateTo('screen-dashboard');
         renderDashboard();
       } else {
-        // Perfil não existe, vai para onboarding
         userProfile = null;
         navigateTo('screen-onboarding');
       }
     } catch (error) {
       console.warn('Erro ao buscar perfil:', error);
-      // Se der erro, tenta criar perfil vazio e vai para onboarding
       if (!userProfile) {
         try {
           await db.collection('users').doc(user.uid).set({
@@ -564,17 +561,14 @@ auth.onAuthStateChanged(async (user) => {
           navigateTo('screen-onboarding');
         } catch (e2) {
           console.error('Erro ao criar perfil:', e2);
-          // Se falhar, mostra login mesmo (mas isso é raro)
           navigateTo('screen-login');
         }
       }
     }
   } else {
-    // Usuário deslogado
     currentUser = null;
     userProfile = null;
     userQuitPlan = null;
-    // Limpa campos de login
     document.getElementById('login-email').value = '';
     document.getElementById('login-password').value = '';
     loginMessage.textContent = '';
@@ -672,8 +666,10 @@ async function renderDashboard() {
 // ============================================================
 // BOTÕES DE NAVEGAÇÃO (usam navigateTo)
 // ============================================================
-// Botão SOS
+
+// SOS
 document.getElementById('btn-sos').addEventListener('click', () => {
+  console.log('Botão SOS clicado!');
   navigateTo('screen-sos');
   startBreathing();
 });
@@ -692,7 +688,6 @@ document.getElementById('btn-register-cigarette').addEventListener('click', () =
   document.getElementById('cig-emotion').value = '';
 });
 
-// Cancelar registro
 document.getElementById('btn-cancel-cigarette').addEventListener('click', () => {
   navigateTo('screen-dashboard');
 });
@@ -736,7 +731,7 @@ document.getElementById('btn-lessons-back').addEventListener('click', () => {
   navigateTo('screen-dashboard');
 });
 
-// Histórico
+// Histórico (CORRIGIDO com exibição detalhada de erro)
 document.getElementById('btn-go-history').addEventListener('click', async () => {
   const container = document.getElementById('history-content');
   container.innerHTML = 'Carregando...';
@@ -767,7 +762,8 @@ document.getElementById('btn-go-history').addEventListener('click', async () => 
     });
     container.innerHTML = html;
   } catch (e) {
-    container.innerHTML = '<p>Erro ao carregar histórico. Verifique sua conexão.</p>';
+    console.error('🔥 ERRO DETALHADO AO CARREGAR HISTÓRICO:', e);
+    container.innerHTML = `<p>Erro: ${e.message || 'Verifique sua conexão.'}</p>`;
   }
   navigateTo('screen-history');
 });
@@ -883,6 +879,10 @@ document.getElementById('btn-save-craving').addEventListener('click', async () =
   renderDashboard();
 });
 
+document.getElementById('btn-cancel-craving').addEventListener('click', () => {
+  navigateTo('screen-dashboard');
+});
+
 document.getElementById('btn-save-relapse').addEventListener('click', async () => {
   if (!currentUser) {
     alert('Você precisa estar logado.');
@@ -918,7 +918,7 @@ const lessonsData = [
   { title: 'Prevenção de recaída', content: 'Planeje situações de risco.' },
 ];
 
-console.log('🚀 App Respira carregado com roteamento protegido!');
+console.log('🚀 App Respira carregado com roteamento protegido e histórico corrigido!');
 </script>
 
 </body>
