@@ -1,436 +1,402 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Respira - App para parar de fumar</title>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230b3b5c'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='%23fff'%3E🚭%3C/text%3E%3C/svg%3E" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f4f7fb;
-            color: #1e293b;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 16px;
-        }
-        #root {
-            width: 100%;
-            max-width: 480px;
-            background: white;
-            border-radius: 32px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            padding: 24px 20px 40px;
-            min-height: 90vh;
-            position: relative;
-        }
-        h1 {
-            font-size: 26px;
-            font-weight: 700;
-            color: #0b3b5c;
-        }
-        h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #0b3b5c;
-            margin-bottom: 12px;
-        }
-        h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 16px 0 8px;
-        }
-        p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #475569;
-            margin-bottom: 12px;
-        }
-        .subtitle {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 20px;
-        }
-        input,
-        select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            font-size: 16px;
-            background: white;
-            transition: border 0.2s;
-            margin-bottom: 12px;
-            outline: none;
-        }
-        input:focus,
-        select:focus {
-            border-color: #3b82f6;
-        }
-        label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #334155;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 16px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 10px;
-            background: #e2e8f0;
-            color: #1e293b;
-        }
-        .btn-primary {
-            background: #0b3b5c;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #0a2f4a;
-        }
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #059669;
-        }
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #0b3b5c;
-            color: #0b3b5c;
-        }
-        .btn-outline:hover {
-            background: #0b3b5c;
-            color: white;
-        }
-        .btn-sos {
-            background: #f59e0b;
-            color: white;
-            font-size: 20px;
-            padding: 20px;
-            border-radius: 50px;
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
-        }
-        .btn-sos:hover {
-            background: #d97706;
-            transform: scale(1.02);
-        }
-        .btn-sm {
-            padding: 10px 16px;
-            font-size: 14px;
-            width: auto;
-            display: inline-block;
-        }
-        .card {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 18px 16px;
-            margin-bottom: 16px;
-            border: 1px solid #e9edf2;
-        }
-        .card-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .stat-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #0b3b5c;
-        }
-        .stat-label {
-            font-size: 13px;
-            color: #64748b;
-        }
-        .screen {
-            display: none;
-            animation: fade 0.3s ease;
-        }
-        .screen.active {
-            display: block;
-        }
-        @keyframes fade {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .flex-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .gap-16 { gap: 16px; }
-        .chip-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .chip {
-            padding: 8px 16px;
-            border-radius: 50px;
-            border: 2px solid #e2e8f0;
-            background: white;
-            font-size: 14px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .chip.selected {
-            background: #0b3b5c;
-            color: white;
-            border-color: #0b3b5c;
-        }
-        .breath-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: #3b82f6;
-            margin: 20px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-            font-weight: 600;
-            transition: all 1s ease;
-            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-            animation: pulse 4s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
-        }
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e9edf2;
-        }
-        .app-header h1 { font-size: 22px; }
-        .user-email {
-            font-size: 14px;
-            color: #64748b;
-            display: block;
-            margin-top: 2px;
-        }
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .logout-btn:hover { color: #ef4444; }
-        @media (max-width: 480px) {
-            #root { padding: 16px; border-radius: 24px; }
-            .stat-number { font-size: 26px; }
-            .btn-sos { font-size: 18px; padding: 18px; }
-        }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Respira - App para parar de fumar</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230b3b5c'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='%23fff'%3E🚭%3C/text%3E%3C/svg%3E" />
+  <style>
+    /* ========== RESET E BASE ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f4f7fb;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    #root {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+      padding: 24px 20px 40px;
+      min-height: 90vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========== SPINNER ========== */
+    .spinner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 6px solid #e2e8f0;
+      border-top: 6px solid #0b3b5c;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ========== TELAS ========== */
+    .screen {
+      display: none;
+      width: 100%;
+      animation: fade 0.3s ease;
+    }
+    .screen.active {
+      display: block;
+    }
+    @keyframes fade {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== TELA DE LOGIN ========== */
+    #screen-login {
+      display: none; /* será ativada pelo JS */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+    }
+    #screen-login.active {
+      display: flex;
+    }
+    #screen-login h1 {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+    #screen-login p {
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    #screen-login input {
+      width: 100%;
+    }
+
+    /* ========== DEMAIS ESTILOS (já existentes) ========== */
+    h1, h2, h3, p, .subtitle, input, select, label, .btn, .card, .card-grid, .stat-number, .stat-label,
+    .chip-group, .chip, .breath-circle, .app-header, .user-email, .logout-btn {
+      /* Mantidos os estilos originais, mas com ajustes de layout */
+    }
+    /* (Reaproveito os estilos da versão anterior, mas compacto) */
+    h1 { font-size: 26px; font-weight: 700; color: #0b3b5c; }
+    h2 { font-size: 20px; font-weight: 600; color: #0b3b5c; margin-bottom: 12px; }
+    h3 { font-size: 16px; font-weight: 600; color: #1e293b; margin: 16px 0 8px; }
+    p { font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 12px; }
+    .subtitle { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 16px;
+      background: white;
+      transition: border 0.2s;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: #3b82f6; }
+    label { font-size: 14px; font-weight: 500; color: #334155; display: block; margin-bottom: 4px; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    .btn-primary { background: #0b3b5c; color: white; }
+    .btn-primary:hover { background: #0a2f4a; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-outline { background: transparent; border: 2px solid #0b3b5c; color: #0b3b5c; }
+    .btn-outline:hover { background: #0b3b5c; color: white; }
+    .btn-sos {
+      background: #f59e0b;
+      color: white;
+      font-size: 20px;
+      padding: 20px;
+      border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+    }
+    .btn-sos:hover { background: #d97706; transform: scale(1.02); }
+    .btn-sm { padding: 10px 16px; font-size: 14px; width: auto; display: inline-block; }
+    .card { background: #f8fafc; border-radius: 20px; padding: 18px 16px; margin-bottom: 16px; border: 1px solid #e9edf2; }
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-number { font-size: 32px; font-weight: 700; color: #0b3b5c; }
+    .stat-label { font-size: 13px; color: #64748b; }
+    .flex-center { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .gap-16 { gap: 16px; }
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .chip {
+      padding: 8px 16px;
+      border-radius: 50px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .chip.selected { background: #0b3b5c; color: white; border-color: #0b3b5c; }
+    .breath-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #3b82f6;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 600;
+      transition: all 1s ease;
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+      animation: pulse 4s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+      50% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e9edf2;
+    }
+    .app-header h1 { font-size: 22px; }
+    .user-email { font-size: 14px; color: #64748b; display: block; margin-top: 2px; }
+    .logout-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .logout-btn:hover { color: #ef4444; }
+    @media (max-width: 480px) {
+      #root { padding: 16px; border-radius: 24px; }
+      .stat-number { font-size: 26px; }
+      .btn-sos { font-size: 18px; padding: 18px; }
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
 </head>
 <body>
 
 <div id="root">
-    <!-- TELA DE LOGIN -->
-    <div id="screen-login" class="screen active flex-center gap-16" style="justify-content:center; min-height:70vh;">
-        <div style="width:100%;">
-            <h1 style="text-align:center;">🚭 Respira</h1>
-            <p style="text-align:center; color:#64748b;">Apoio diário para você parar de fumar</p>
-            <div style="margin-top:32px;">
-                <label>E-mail</label>
-                <input type="email" id="login-email" placeholder="seu@email.com" />
-                <label>Senha</label>
-                <input type="password" id="login-password" placeholder="mínimo 6 caracteres" />
-                <button class="btn btn-primary" id="btn-login">Entrar</button>
-                <button class="btn btn-outline" id="btn-register">Criar conta gratuita</button>
-                <p id="login-message" style="color:#ef4444; font-size:14px; text-align:center; margin-top:8px;"></p>
-            </div>
-        </div>
+  <!-- TELA DE CARREGAMENTO (SPINNER) -->
+  <div id="screen-loading" class="screen active">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p style="color: #64748b;">Carregando...</p>
     </div>
+  </div>
 
-    <!-- ONBOARDING -->
-    <div id="screen-onboarding" class="screen">
-        <h2>Vamos começar 👋</h2>
-        <p class="subtitle">Responda algumas perguntas para personalizar seu plano.</p>
-        <div id="onboarding-step1">
-            <label>Quantos cigarros você fuma por dia?</label>
-            <select id="onboard-cigarettes">
-                <option value="5">Menos de 5</option>
-                <option value="10" selected>6 a 10</option>
-                <option value="15">11 a 20</option>
-                <option value="25">Mais de 20</option>
-            </select>
-            <label>Quanto tempo após acordar você fuma o primeiro cigarro?</label>
-            <select id="onboard-time">
-                <option value="5">Menos de 5 minutos</option>
-                <option value="15" selected>6 a 30 minutos</option>
-                <option value="45">31 a 60 minutos</option>
-                <option value="90">Mais de 60 minutos</option>
-            </select>
-            <label>Há quantos anos você fuma?</label>
-            <select id="onboard-years">
-                <option value="2">Menos de 2 anos</option>
-                <option value="5" selected>2 a 5 anos</option>
-                <option value="10">6 a 10 anos</option>
-                <option value="15">Mais de 10 anos</option>
-            </select>
-            <label>Quais são seus principais gatilhos? (escolha até 3)</label>
-            <div class="chip-group" id="trigger-group">
-                <span class="chip" data-value="cafe">Café</span>
-                <span class="chip" data-value="alcool">Álcool</span>
-                <span class="chip" data-value="estresse">Estresse</span>
-                <span class="chip" data-value="trabalho">Trabalho</span>
-                <span class="chip" data-value="direcao">Direção</span>
-                <span class="chip" data-value="refeicao">Refeições</span>
-                <span class="chip" data-value="social">Amigos fumantes</span>
-                <span class="chip" data-value="outro">Outro</span>
-            </div>
-            <label>Quando você quer parar?</label>
-            <select id="onboard-quit-date">
-                <option value="today">Hoje</option>
-                <option value="7" selected>Em 7 dias</option>
-                <option value="14">Em 14 dias</option>
-                <option value="reduce">Quero reduzir antes</option>
-            </select>
-            <button class="btn btn-primary" id="btn-finish-onboarding">Gerar meu plano</button>
-        </div>
+  <!-- TELA DE LOGIN / CADASTRO -->
+  <div id="screen-login" class="screen">
+    <h1 style="text-align:center;">🚭 Respira</h1>
+    <p style="text-align:center; color:#64748b;">Apoio diário para você parar de fumar</p>
+    <div style="width:100%; margin-top: 24px;">
+      <label>E-mail</label>
+      <input type="email" id="login-email" placeholder="seu@email.com" />
+      <label>Senha</label>
+      <input type="password" id="login-password" placeholder="mínimo 6 caracteres" />
+      <button class="btn btn-primary" id="btn-login">Entrar</button>
+      <button class="btn btn-outline" id="btn-register">Criar conta gratuita</button>
+      <p id="login-message" style="color:#ef4444; font-size:14px; text-align:center; margin-top:8px;"></p>
     </div>
+  </div>
 
-    <!-- DASHBOARD -->
-    <div id="screen-dashboard" class="screen">
-        <div class="app-header">
-            <div>
-                <h1>🚭 Respira</h1>
-                <span class="user-email" id="user-email"></span>
-            </div>
-            <button class="logout-btn" id="btn-logout">Sair</button>
-        </div>
-        <div class="card-grid">
-            <div class="card">
-                <div class="stat-number" id="dash-days">0</div>
-                <div class="stat-label">Dias sem fumar</div>
-            </div>
-            <div class="card">
-                <div class="stat-number" id="dash-money">R$ 0</div>
-                <div class="stat-label">Economizados</div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="stat-number" id="dash-cigarettes-avoided">0</div>
-            <div class="stat-label">Cigarros não fumados</div>
-        </div>
-        <button class="btn btn-sos" id="btn-sos">🔥 Estou com vontade de fumar</button>
-        <div style="display:flex; gap:8px; margin:12px 0;">
-            <button class="btn btn-primary btn-sm" id="btn-register-cigarette" style="flex:1;">🚬 Fumei</button>
-            <button class="btn btn-success btn-sm" id="btn-register-craving" style="flex:1;">💪 Venci fissura</button>
-            <button class="btn btn-outline btn-sm" id="btn-relapse" style="flex:1; border-color:#ef4444; color:#ef4444;">⚠️ Recaída</button>
-        </div>
-        <div style="margin-top:16px;">
-            <button class="btn btn-outline btn-sm" id="btn-go-lessons" style="width:auto;">📚 Lições</button>
-            <button class="btn btn-outline btn-sm" id="btn-go-history" style="width:auto;">📊 Histórico</button>
-        </div>
+  <!-- DEMAIS TELAS (protegidas) -->
+  <div id="screen-onboarding" class="screen">
+    <h2>Vamos começar 👋</h2>
+    <p class="subtitle">Responda algumas perguntas para personalizar seu plano.</p>
+    <!-- conteúdo do onboarding (igual ao anterior) -->
+    <div id="onboarding-step1">
+      <label>Quantos cigarros você fuma por dia?</label>
+      <select id="onboard-cigarettes">
+        <option value="5">Menos de 5</option>
+        <option value="10" selected>6 a 10</option>
+        <option value="15">11 a 20</option>
+        <option value="25">Mais de 20</option>
+      </select>
+      <label>Quanto tempo após acordar você fuma o primeiro cigarro?</label>
+      <select id="onboard-time">
+        <option value="5">Menos de 5 minutos</option>
+        <option value="15" selected>6 a 30 minutos</option>
+        <option value="45">31 a 60 minutos</option>
+        <option value="90">Mais de 60 minutos</option>
+      </select>
+      <label>Há quantos anos você fuma?</label>
+      <select id="onboard-years">
+        <option value="2">Menos de 2 anos</option>
+        <option value="5" selected>2 a 5 anos</option>
+        <option value="10">6 a 10 anos</option>
+        <option value="15">Mais de 10 anos</option>
+      </select>
+      <label>Quais são seus principais gatilhos? (escolha até 3)</label>
+      <div class="chip-group" id="trigger-group">
+        <span class="chip" data-value="cafe">Café</span>
+        <span class="chip" data-value="alcool">Álcool</span>
+        <span class="chip" data-value="estresse">Estresse</span>
+        <span class="chip" data-value="trabalho">Trabalho</span>
+        <span class="chip" data-value="direcao">Direção</span>
+        <span class="chip" data-value="refeicao">Refeições</span>
+        <span class="chip" data-value="social">Amigos fumantes</span>
+        <span class="chip" data-value="outro">Outro</span>
+      </div>
+      <label>Quando você quer parar?</label>
+      <select id="onboard-quit-date">
+        <option value="today">Hoje</option>
+        <option value="7" selected>Em 7 dias</option>
+        <option value="14">Em 14 dias</option>
+        <option value="reduce">Quero reduzir antes</option>
+      </select>
+      <button class="btn btn-primary" id="btn-finish-onboarding">Gerar meu plano</button>
     </div>
+  </div>
 
-    <!-- SOS -->
-    <div id="screen-sos" class="screen flex-center gap-16" style="text-align:center;">
-        <h2>🧘 Respire comigo</h2>
-        <p>A fissura é como uma onda, ela passa.</p>
-        <div class="breath-circle" id="breath-circle">Inspire</div>
-        <p id="breath-text">Inspire lentamente pelo nariz...</p>
-        <button class="btn btn-success" id="btn-sos-done">Consegui! Não fumei</button>
-        <button class="btn btn-danger" id="btn-sos-fail">Não consegui, fumei</button>
-        <button class="btn btn-outline btn-sm" id="btn-sos-back">Voltar</button>
+  <div id="screen-dashboard" class="screen">
+    <div class="app-header">
+      <div>
+        <h1>🚭 Respira</h1>
+        <span class="user-email" id="user-email"></span>
+      </div>
+      <button class="logout-btn" id="btn-logout">Sair</button>
     </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="stat-number" id="dash-days">0</div>
+        <div class="stat-label">Dias sem fumar</div>
+      </div>
+      <div class="card">
+        <div class="stat-number" id="dash-money">R$ 0</div>
+        <div class="stat-label">Economizados</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat-number" id="dash-cigarettes-avoided">0</div>
+      <div class="stat-label">Cigarros não fumados</div>
+    </div>
+    <button class="btn btn-sos" id="btn-sos">🔥 Estou com vontade de fumar</button>
+    <div style="display:flex; gap:8px; margin:12px 0;">
+      <button class="btn btn-primary btn-sm" id="btn-register-cigarette" style="flex:1;">🚬 Fumei</button>
+      <button class="btn btn-success btn-sm" id="btn-register-craving" style="flex:1;">💪 Venci fissura</button>
+      <button class="btn btn-outline btn-sm" id="btn-relapse" style="flex:1; border-color:#ef4444; color:#ef4444;">⚠️ Recaída</button>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-outline btn-sm" id="btn-go-lessons" style="width:auto;">📚 Lições</button>
+      <button class="btn btn-outline btn-sm" id="btn-go-history" style="width:auto;">📊 Histórico</button>
+    </div>
+  </div>
 
-    <!-- REGISTRAR CIGARRO -->
-    <div id="screen-register-cigarette" class="screen">
-        <h2>🚬 Registrar cigarro</h2>
-        <label>Contexto / Gatilho</label>
-        <input type="text" id="cig-context" placeholder="Ex: após café, estresse..." />
-        <label>Vontade (0 a 10)</label>
-        <input type="number" id="cig-craving" min="0" max="10" value="7" />
-        <label>Emoção</label>
-        <input type="text" id="cig-emotion" placeholder="Ansiedade, tédio, alegria..." />
-        <button class="btn btn-primary" id="btn-save-cigarette">Salvar</button>
-        <button class="btn btn-outline" id="btn-cancel-cigarette">Cancelar</button>
-    </div>
+  <!-- SOS -->
+  <div id="screen-sos" class="screen flex-center gap-16" style="text-align:center;">
+    <h2>🧘 Respire comigo</h2>
+    <p>A fissura é como uma onda, ela passa.</p>
+    <div class="breath-circle" id="breath-circle">Inspire</div>
+    <p id="breath-text">Inspire lentamente pelo nariz...</p>
+    <button class="btn btn-success" id="btn-sos-done">Consegui! Não fumei</button>
+    <button class="btn btn-danger" id="btn-sos-fail">Não consegui, fumei</button>
+    <button class="btn btn-outline btn-sm" id="btn-sos-back">Voltar</button>
+  </div>
 
-    <!-- REGISTRAR FISSURA VENCIDA -->
-    <div id="screen-register-craving" class="screen">
-        <h2>💪 Venci uma fissura!</h2>
-        <label>Gatilho</label>
-        <input type="text" id="craving-trigger" placeholder="O que estava acontecendo?" />
-        <label>Intensidade (0 a 10)</label>
-        <input type="number" id="craving-intensity" min="0" max="10" value="6" />
-        <label>Estratégia usada</label>
-        <select id="craving-strategy">
-            <option value="respirar">Respiração</option>
-            <option value="agua">Beber água</option>
-            <option value="distracao">Distração</option>
-            <option value="caminhar">Caminhar</option>
-            <option value="apoio">Contatar apoio</option>
-            <option value="outro">Outro</option>
-        </select>
-        <button class="btn btn-success" id="btn-save-craving">Registrar</button>
-        <button class="btn btn-outline" id="btn-cancel-craving">Cancelar</button>
-    </div>
+  <!-- Registrar cigarro -->
+  <div id="screen-register-cigarette" class="screen">
+    <h2>🚬 Registrar cigarro</h2>
+    <label>Contexto / Gatilho</label>
+    <input type="text" id="cig-context" placeholder="Ex: após café, estresse..." />
+    <label>Vontade (0 a 10)</label>
+    <input type="number" id="cig-craving" min="0" max="10" value="7" />
+    <label>Emoção</label>
+    <input type="text" id="cig-emotion" placeholder="Ansiedade, tédio, alegria..." />
+    <button class="btn btn-primary" id="btn-save-cigarette">Salvar</button>
+    <button class="btn btn-outline" id="btn-cancel-cigarette">Cancelar</button>
+  </div>
 
-    <!-- RECAÍDA -->
-    <div id="screen-relapse" class="screen">
-        <h2>⚠️ Aconteceu. E tudo bem.</h2>
-        <p>Um deslize não apaga todo seu progresso. Vamos aprender com isso.</p>
-        <label>Onde você estava?</label>
-        <input type="text" id="relapse-place" placeholder="Casa, festa, trabalho..." />
-        <label>Qual foi o gatilho?</label>
-        <input type="text" id="relapse-trigger" placeholder="Estresse, álcool, social..." />
-        <label>O que você sentiu?</label>
-        <input type="text" id="relapse-feeling" placeholder="Culpa, alívio, frustração..." />
-        <label>O que você poderia fazer diferente?</label>
-        <input type="text" id="relapse-learn" placeholder="Ligar para um amigo, sair do ambiente..." />
-        <button class="btn btn-primary" id="btn-save-relapse">Registrar e seguir em frente</button>
-        <button class="btn btn-outline" id="btn-cancel-relapse">Voltar</button>
-    </div>
+  <!-- Registrar fissura vencida -->
+  <div id="screen-register-craving" class="screen">
+    <h2>💪 Venci uma fissura!</h2>
+    <label>Gatilho</label>
+    <input type="text" id="craving-trigger" placeholder="O que estava acontecendo?" />
+    <label>Intensidade (0 a 10)</label>
+    <input type="number" id="craving-intensity" min="0" max="10" value="6" />
+    <label>Estratégia usada</label>
+    <select id="craving-strategy">
+      <option value="respirar">Respiração</option>
+      <option value="agua">Beber água</option>
+      <option value="distracao">Distração</option>
+      <option value="caminhar">Caminhar</option>
+      <option value="apoio">Contatar apoio</option>
+      <option value="outro">Outro</option>
+    </select>
+    <button class="btn btn-success" id="btn-save-craving">Registrar</button>
+    <button class="btn btn-outline" id="btn-cancel-craving">Cancelar</button>
+  </div>
 
-    <!-- LIÇÕES -->
-    <div id="screen-lessons" class="screen">
-        <h2>📚 Lições de apoio</h2>
-        <div id="lessons-list"></div>
-        <button class="btn btn-outline" id="btn-lessons-back">Voltar</button>
-    </div>
+  <!-- Recaída -->
+  <div id="screen-relapse" class="screen">
+    <h2>⚠️ Aconteceu. E tudo bem.</h2>
+    <p>Um deslize não apaga todo seu progresso. Vamos aprender com isso.</p>
+    <label>Onde você estava?</label>
+    <input type="text" id="relapse-place" placeholder="Casa, festa, trabalho..." />
+    <label>Qual foi o gatilho?</label>
+    <input type="text" id="relapse-trigger" placeholder="Estresse, álcool, social..." />
+    <label>O que você sentiu?</label>
+    <input type="text" id="relapse-feeling" placeholder="Culpa, alívio, frustração..." />
+    <label>O que você poderia fazer diferente?</label>
+    <input type="text" id="relapse-learn" placeholder="Ligar para um amigo, sair do ambiente..." />
+    <button class="btn btn-primary" id="btn-save-relapse">Registrar e seguir em frente</button>
+    <button class="btn btn-outline" id="btn-cancel-relapse">Voltar</button>
+  </div>
 
-    <!-- HISTÓRICO -->
-    <div id="screen-history" class="screen">
-        <h2>📊 Histórico</h2>
-        <div id="history-content"><p>Carregando...</p></div>
-        <button class="btn btn-outline" id="btn-history-back">Voltar</button>
-    </div>
+  <!-- Lições -->
+  <div id="screen-lessons" class="screen">
+    <h2>📚 Lições de apoio</h2>
+    <div id="lessons-list"></div>
+    <button class="btn btn-outline" id="btn-lessons-back">Voltar</button>
+  </div>
+
+  <!-- Histórico -->
+  <div id="screen-history" class="screen">
+    <h2>📊 Histórico</h2>
+    <div id="history-content"><p>Carregando...</p></div>
+    <button class="btn btn-outline" id="btn-history-back">Voltar</button>
+  </div>
+
 </div>
 
 <!-- ========== FIREBASE SDK ========== -->
@@ -440,7 +406,7 @@
 
 <script>
 // ============================================================
-// CONFIGURAÇÃO DO FIREBASE (com suas chaves)
+// CONFIGURAÇÃO DO FIREBASE (suas chaves)
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyBKTKw3az-6zAaEYRTG0ctw2ey57h666AI",
@@ -456,6 +422,47 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // ============================================================
+// ROTEAMENTO PROTEgIDO
+// ============================================================
+const PROTECTED_SCREENS = [
+  'screen-onboarding',
+  'screen-dashboard',
+  'screen-sos',
+  'screen-register-cigarette',
+  'screen-register-craving',
+  'screen-relapse',
+  'screen-lessons',
+  'screen-history'
+];
+
+// Função principal de navegação
+function navigateTo(screenId) {
+  // Verifica se é uma tela protegida e se o usuário não está logado
+  if (PROTECTED_SCREENS.includes(screenId) && !currentUser) {
+    console.warn('Tela protegida, redirecionando para login.');
+    showScreen('screen-login');
+    return;
+  }
+  // Se for login e usuário já está logado, redireciona para dashboard (ou onboarding)
+  if (screenId === 'screen-login' && currentUser) {
+    // Verifica se perfil existe
+    if (userProfile) {
+      showScreen('screen-dashboard');
+    } else {
+      showScreen('screen-onboarding');
+    }
+    return;
+  }
+  showScreen(screenId);
+}
+
+// Função auxiliar para exibir tela (sem bloqueio)
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================================================
 // ESTADO GLOBAL
 // ============================================================
 let currentUser = null;
@@ -463,15 +470,7 @@ let userProfile = null;
 let userQuitPlan = null;
 
 // ============================================================
-// HELPERS
-// ============================================================
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// ============================================================
-// CHIPS (onboarding)
+// ONBOARDING - CHIPS
 // ============================================================
 const chips = document.querySelectorAll('.chip');
 let selectedTriggers = [];
@@ -491,7 +490,7 @@ chips.forEach(chip => {
 });
 
 // ============================================================
-// LOGIN / REGISTER
+// LOGIN / REGISTER / LOGOUT
 // ============================================================
 const loginMessage = document.getElementById('login-message');
 
@@ -526,54 +525,60 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 });
 
 // ============================================================
-// AUTH STATE OBSERVER (CORRIGIDO)
+// AUTH STATE OBSERVER (com roteamento e spinner)
 // ============================================================
 auth.onAuthStateChanged(async (user) => {
-  console.log('Auth state changed:', user ? 'logado' : 'deslogado');
+  // Remove spinner
+  document.getElementById('screen-loading').classList.remove('active');
+
   if (user) {
     currentUser = user;
-    // Já mostra o dashboard imediatamente
-    showScreen('screen-dashboard');
-    // Exibe o email no cabeçalho
-    document.getElementById('user-email').textContent = currentUser.email;
+    // Mostra o email no cabeçalho (se houver)
+    const emailEl = document.getElementById('user-email');
+    if (emailEl) emailEl.textContent = currentUser.email;
 
+    // Tenta buscar perfil
     try {
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists) {
         userProfile = doc.data();
         const planSnap = await db.collection('quitPlans').doc(user.uid).get();
         userQuitPlan = planSnap.exists ? planSnap.data() : null;
+        navigateTo('screen-dashboard');
         renderDashboard();
       } else {
-        // Se não tem perfil, vai para onboarding
-        showScreen('screen-onboarding');
+        // Perfil não existe, vai para onboarding
+        userProfile = null;
+        navigateTo('screen-onboarding');
       }
     } catch (error) {
-      console.warn('Erro ao buscar perfil, mas continuamos no dashboard:', error);
-      // Se der erro (ex: permissão), o usuário pode criar o perfil depois
-      // Vamos tentar criar um perfil vazio se não existir
+      console.warn('Erro ao buscar perfil:', error);
+      // Se der erro, tenta criar perfil vazio e vai para onboarding
       if (!userProfile) {
-        // Tenta criar perfil mínimo
         try {
           await db.collection('users').doc(user.uid).set({
             userId: user.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           userProfile = { userId: user.uid };
-          showScreen('screen-onboarding');
+          navigateTo('screen-onboarding');
         } catch (e2) {
           console.error('Erro ao criar perfil:', e2);
+          // Se falhar, mostra login mesmo (mas isso é raro)
+          navigateTo('screen-login');
         }
       }
     }
   } else {
+    // Usuário deslogado
     currentUser = null;
     userProfile = null;
     userQuitPlan = null;
-    showScreen('screen-login');
+    // Limpa campos de login
     document.getElementById('login-email').value = '';
     document.getElementById('login-password').value = '';
     loginMessage.textContent = '';
+    navigateTo('screen-login');
   }
 });
 
@@ -581,7 +586,10 @@ auth.onAuthStateChanged(async (user) => {
 // SALVAR ONBOARDING
 // ============================================================
 document.getElementById('btn-finish-onboarding').addEventListener('click', async () => {
-  if (!currentUser) return;
+  if (!currentUser) {
+    alert('Você precisa estar logado para concluir o cadastro.');
+    return;
+  }
 
   const cigs = parseInt(document.getElementById('onboard-cigarettes').value);
   const time = parseInt(document.getElementById('onboard-time').value);
@@ -634,7 +642,7 @@ document.getElementById('btn-finish-onboarding').addEventListener('click', async
     lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  showScreen('screen-dashboard');
+  navigateTo('screen-dashboard');
   renderDashboard();
 });
 
@@ -643,8 +651,6 @@ document.getElementById('btn-finish-onboarding').addEventListener('click', async
 // ============================================================
 async function renderDashboard() {
   if (!currentUser) return;
-
-  // Atualiza o email (segurança)
   document.getElementById('user-email').textContent = currentUser.email;
 
   const counterDoc = await db.collection('counters').doc(currentUser.uid).get();
@@ -664,187 +670,58 @@ async function renderDashboard() {
 }
 
 // ============================================================
-// BOTÃO SOS
+// BOTÕES DE NAVEGAÇÃO (usam navigateTo)
 // ============================================================
+// Botão SOS
 document.getElementById('btn-sos').addEventListener('click', () => {
-  showScreen('screen-sos');
+  navigateTo('screen-sos');
   startBreathing();
 });
 
-let breathInterval = null;
-
-function startBreathing() {
-  const circle = document.getElementById('breath-circle');
-  const text = document.getElementById('breath-text');
-  const phases = [
-    { label: 'Inspire...', color: '#3b82f6', scale: 1.1 },
-    { label: 'Segure...', color: '#8b5cf6', scale: 1.1 },
-    { label: 'Solte...', color: '#10b981', scale: 0.9 },
-  ];
-  let i = 0;
-  if (breathInterval) clearInterval(breathInterval);
-  breathInterval = setInterval(() => {
-    const p = phases[i % phases.length];
-    circle.textContent = p.label;
-    circle.style.background = p.color;
-    circle.style.transform = `scale(${p.scale})`;
-    text.textContent = p.label + '...';
-    i++;
-    if (i >= 9) {
-      clearInterval(breathInterval);
-      breathInterval = null;
-      circle.textContent = '✅';
-      circle.style.background = '#10b981';
-      circle.style.transform = 'scale(1)';
-      text.textContent = 'Ótimo! A fissura está passando.';
-    }
-  }, 1200);
-}
-
-document.getElementById('btn-sos-done').addEventListener('click', async () => {
-  if (breathInterval) { clearInterval(breathInterval); breathInterval = null; }
-  await saveCravingLog('respirar', 7, false);
-  showScreen('screen-dashboard');
-  renderDashboard();
-});
-
-document.getElementById('btn-sos-fail').addEventListener('click', () => {
-  if (breathInterval) { clearInterval(breathInterval); breathInterval = null; }
-  showScreen('screen-relapse');
-});
-
+// Voltar do SOS
 document.getElementById('btn-sos-back').addEventListener('click', () => {
-  if (breathInterval) { clearInterval(breathInterval); breathInterval = null; }
-  showScreen('screen-dashboard');
+  if (breathInterval) clearInterval(breathInterval);
+  navigateTo('screen-dashboard');
 });
 
-// ============================================================
-// REGISTRAR CIGARRO
-// ============================================================
+// Registrar cigarro
 document.getElementById('btn-register-cigarette').addEventListener('click', () => {
-  showScreen('screen-register-cigarette');
+  navigateTo('screen-register-cigarette');
   document.getElementById('cig-context').value = '';
   document.getElementById('cig-craving').value = '7';
   document.getElementById('cig-emotion').value = '';
 });
 
-document.getElementById('btn-save-cigarette').addEventListener('click', async () => {
-  const context = document.getElementById('cig-context').value || 'não informado';
-  const craving = parseInt(document.getElementById('cig-craving').value) || 0;
-  const emotion = document.getElementById('cig-emotion').value || 'não informado';
-  await db.collection('cigaretteLogs').add({
-    userId: currentUser.uid,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    context,
-    craving,
-    emotion
-  });
-  showScreen('screen-dashboard');
-  renderDashboard();
-});
-
+// Cancelar registro
 document.getElementById('btn-cancel-cigarette').addEventListener('click', () => {
-  showScreen('screen-dashboard');
+  navigateTo('screen-dashboard');
 });
 
-// ============================================================
-// REGISTRAR FISSURA VENCIDA
-// ============================================================
+// Registrar fissura vencida
 document.getElementById('btn-register-craving').addEventListener('click', () => {
-  showScreen('screen-register-craving');
+  navigateTo('screen-register-craving');
   document.getElementById('craving-trigger').value = '';
   document.getElementById('craving-intensity').value = '6';
 });
 
-async function saveCravingLog(strategy, intensity, smoked) {
-  await db.collection('cravingLogs').add({
-    userId: currentUser.uid,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    trigger: document.getElementById('craving-trigger').value || 'não informado',
-    intensity: intensity || 6,
-    strategyUsed: strategy || 'respirar',
-    smoked: smoked || false
-  });
-  if (!smoked) {
-    const counterRef = db.collection('counters').doc(currentUser.uid);
-    await counterRef.update({
-      cigarettesAvoided: firebase.firestore.FieldValue.increment(1),
-      moneySaved: firebase.firestore.FieldValue.increment(0.50)
-    });
-  }
-}
-
-document.getElementById('btn-save-craving').addEventListener('click', async () => {
-  const trigger = document.getElementById('craving-trigger').value || 'não informado';
-  const intensity = parseInt(document.getElementById('craving-intensity').value) || 6;
-  const strategy = document.getElementById('craving-strategy').value;
-  await db.collection('cravingLogs').add({
-    userId: currentUser.uid,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    trigger,
-    intensity,
-    strategyUsed: strategy,
-    smoked: false
-  });
-  const counterRef = db.collection('counters').doc(currentUser.uid);
-  await counterRef.update({
-    cigarettesAvoided: firebase.firestore.FieldValue.increment(1),
-    moneySaved: firebase.firestore.FieldValue.increment(0.50)
-  });
-  showScreen('screen-dashboard');
-  renderDashboard();
-});
-
 document.getElementById('btn-cancel-craving').addEventListener('click', () => {
-  showScreen('screen-dashboard');
+  navigateTo('screen-dashboard');
 });
 
-// ============================================================
-// RECAÍDA
-// ============================================================
+// Recaída
 document.getElementById('btn-relapse').addEventListener('click', () => {
-  showScreen('screen-relapse');
+  navigateTo('screen-relapse');
   document.getElementById('relapse-place').value = '';
   document.getElementById('relapse-trigger').value = '';
   document.getElementById('relapse-feeling').value = '';
   document.getElementById('relapse-learn').value = '';
 });
 
-document.getElementById('btn-save-relapse').addEventListener('click', async () => {
-  const place = document.getElementById('relapse-place').value || 'não informado';
-  const trigger = document.getElementById('relapse-trigger').value || 'não informado';
-  const feeling = document.getElementById('relapse-feeling').value || 'não informado';
-  const learn = document.getElementById('relapse-learn').value || 'não informado';
-  await db.collection('relapseEvents').add({
-    userId: currentUser.uid,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    place,
-    trigger,
-    feeling,
-    lessonLearned: learn
-  });
-  showScreen('screen-dashboard');
-  renderDashboard();
-});
-
 document.getElementById('btn-cancel-relapse').addEventListener('click', () => {
-  showScreen('screen-dashboard');
+  navigateTo('screen-dashboard');
 });
 
-// ============================================================
-// LIÇÕES
-// ============================================================
-const lessonsData = [
-  { title: 'Conhecendo seus gatilhos', content: 'Identifique o que te leva a fumar.' },
-  { title: 'Respiração 4-7-8', content: 'Inspire 4, segure 7, solte 8.' },
-  { title: 'Desarmando o ambiente', content: 'Jogue fora cinzeiros e isqueiros.' },
-  { title: 'O poder do "Se... Então..."', content: 'Crie planos para cada gatilho.' },
-  { title: 'Lidando com a fissura', content: 'A fissura passa em 5 minutos.' },
-  { title: 'Recompensas sem cigarro', content: 'Use o dinheiro economizado.' },
-  { title: 'Mitos sobre fumar', content: 'Fumar não acalma, vicia.' },
-  { title: 'Prevenção de recaída', content: 'Planeje situações de risco.' },
-];
-
+// Lições
 document.getElementById('btn-go-lessons').addEventListener('click', () => {
   const container = document.getElementById('lessons-list');
   container.innerHTML = lessonsData.map((l, i) =>
@@ -852,16 +729,14 @@ document.getElementById('btn-go-lessons').addEventListener('click', () => {
       <strong>${i+1}. ${l.title}</strong>
     </div>`
   ).join('');
-  showScreen('screen-lessons');
+  navigateTo('screen-lessons');
 });
 
 document.getElementById('btn-lessons-back').addEventListener('click', () => {
-  showScreen('screen-dashboard');
+  navigateTo('screen-dashboard');
 });
 
-// ============================================================
-// HISTÓRICO
-// ============================================================
+// Histórico
 document.getElementById('btn-go-history').addEventListener('click', async () => {
   const container = document.getElementById('history-content');
   container.innerHTML = 'Carregando...';
@@ -894,14 +769,156 @@ document.getElementById('btn-go-history').addEventListener('click', async () => 
   } catch (e) {
     container.innerHTML = '<p>Erro ao carregar histórico. Verifique sua conexão.</p>';
   }
-  showScreen('screen-history');
+  navigateTo('screen-history');
 });
 
 document.getElementById('btn-history-back').addEventListener('click', () => {
-  showScreen('screen-dashboard');
+  navigateTo('screen-dashboard');
 });
 
-console.log('🚀 App Respira carregado com sucesso!');
+// ============================================================
+// FUNÇÕES AUXILIARES (SOS, salvar, etc.)
+// ============================================================
+let breathInterval = null;
+
+function startBreathing() {
+  const circle = document.getElementById('breath-circle');
+  const text = document.getElementById('breath-text');
+  const phases = [
+    { label: 'Inspire...', color: '#3b82f6', scale: 1.1 },
+    { label: 'Segure...', color: '#8b5cf6', scale: 1.1 },
+    { label: 'Solte...', color: '#10b981', scale: 0.9 },
+  ];
+  let i = 0;
+  if (breathInterval) clearInterval(breathInterval);
+  breathInterval = setInterval(() => {
+    const p = phases[i % phases.length];
+    circle.textContent = p.label;
+    circle.style.background = p.color;
+    circle.style.transform = `scale(${p.scale})`;
+    text.textContent = p.label + '...';
+    i++;
+    if (i >= 9) {
+      clearInterval(breathInterval);
+      breathInterval = null;
+      circle.textContent = '✅';
+      circle.style.background = '#10b981';
+      circle.style.transform = 'scale(1)';
+      text.textContent = 'Ótimo! A fissura está passando.';
+    }
+  }, 1200);
+}
+
+document.getElementById('btn-sos-done').addEventListener('click', async () => {
+  if (breathInterval) clearInterval(breathInterval);
+  await saveCravingLog('respirar', 7, false);
+  navigateTo('screen-dashboard');
+  renderDashboard();
+});
+
+document.getElementById('btn-sos-fail').addEventListener('click', () => {
+  if (breathInterval) clearInterval(breathInterval);
+  navigateTo('screen-relapse');
+});
+
+async function saveCravingLog(strategy, intensity, smoked) {
+  await db.collection('cravingLogs').add({
+    userId: currentUser.uid,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    trigger: document.getElementById('craving-trigger').value || 'não informado',
+    intensity: intensity || 6,
+    strategyUsed: strategy || 'respirar',
+    smoked: smoked || false
+  });
+  if (!smoked) {
+    const counterRef = db.collection('counters').doc(currentUser.uid);
+    await counterRef.update({
+      cigarettesAvoided: firebase.firestore.FieldValue.increment(1),
+      moneySaved: firebase.firestore.FieldValue.increment(0.50)
+    });
+  }
+}
+
+document.getElementById('btn-save-cigarette').addEventListener('click', async () => {
+  if (!currentUser) {
+    alert('Você precisa estar logado.');
+    return;
+  }
+  const context = document.getElementById('cig-context').value || 'não informado';
+  const craving = parseInt(document.getElementById('cig-craving').value) || 0;
+  const emotion = document.getElementById('cig-emotion').value || 'não informado';
+  await db.collection('cigaretteLogs').add({
+    userId: currentUser.uid,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    context,
+    craving,
+    emotion
+  });
+  navigateTo('screen-dashboard');
+  renderDashboard();
+});
+
+document.getElementById('btn-save-craving').addEventListener('click', async () => {
+  if (!currentUser) {
+    alert('Você precisa estar logado.');
+    return;
+  }
+  const trigger = document.getElementById('craving-trigger').value || 'não informado';
+  const intensity = parseInt(document.getElementById('craving-intensity').value) || 6;
+  const strategy = document.getElementById('craving-strategy').value;
+  await db.collection('cravingLogs').add({
+    userId: currentUser.uid,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    trigger,
+    intensity,
+    strategyUsed: strategy,
+    smoked: false
+  });
+  const counterRef = db.collection('counters').doc(currentUser.uid);
+  await counterRef.update({
+    cigarettesAvoided: firebase.firestore.FieldValue.increment(1),
+    moneySaved: firebase.firestore.FieldValue.increment(0.50)
+  });
+  navigateTo('screen-dashboard');
+  renderDashboard();
+});
+
+document.getElementById('btn-save-relapse').addEventListener('click', async () => {
+  if (!currentUser) {
+    alert('Você precisa estar logado.');
+    return;
+  }
+  const place = document.getElementById('relapse-place').value || 'não informado';
+  const trigger = document.getElementById('relapse-trigger').value || 'não informado';
+  const feeling = document.getElementById('relapse-feeling').value || 'não informado';
+  const learn = document.getElementById('relapse-learn').value || 'não informado';
+  await db.collection('relapseEvents').add({
+    userId: currentUser.uid,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    place,
+    trigger,
+    feeling,
+    lessonLearned: learn
+  });
+  navigateTo('screen-dashboard');
+  renderDashboard();
+});
+
+// ============================================================
+// LIÇÕES (hardcoded)
+// ============================================================
+const lessonsData = [
+  { title: 'Conhecendo seus gatilhos', content: 'Identifique o que te leva a fumar.' },
+  { title: 'Respiração 4-7-8', content: 'Inspire 4, segure 7, solte 8.' },
+  { title: 'Desarmando o ambiente', content: 'Jogue fora cinzeiros e isqueiros.' },
+  { title: 'O poder do "Se... Então..."', content: 'Crie planos para cada gatilho.' },
+  { title: 'Lidando com a fissura', content: 'A fissura passa em 5 minutos.' },
+  { title: 'Recompensas sem cigarro', content: 'Use o dinheiro economizado.' },
+  { title: 'Mitos sobre fumar', content: 'Fumar não acalma, vicia.' },
+  { title: 'Prevenção de recaída', content: 'Planeje situações de risco.' },
+];
+
+console.log('🚀 App Respira carregado com roteamento protegido!');
 </script>
 
 </body>
