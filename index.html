@@ -134,15 +134,48 @@
     .btn-sos:hover { background: #d97706; transform: scale(1.02); }
     .btn-sm { padding: 10px 16px; font-size: 14px; width: auto; display: inline-block; }
 
-    .card { background: #f8fafc; border-radius: 20px; padding: 18px 16px; margin-bottom: 16px; border: 1px solid #e9edf2; }
-    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stat-number { font-size: 32px; font-weight: 700; color: #0b3b5c; }
-    .stat-label { font-size: 13px; color: #64748b; }
+    .card {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 18px 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e9edf2;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .card:hover {
+      background: #e9edf2;
+      transform: scale(1.01);
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0b3b5c;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: #64748b;
+    }
 
-    .flex-center { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .flex-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
     .gap-16 { gap: 16px; }
 
-    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
     .chip {
       padding: 8px 16px;
       border-radius: 50px;
@@ -152,7 +185,11 @@
       cursor: pointer;
       user-select: none;
     }
-    .chip.selected { background: #0b3b5c; color: white; border-color: #0b3b5c; }
+    .chip.selected {
+      background: #0b3b5c;
+      color: white;
+      border-color: #0b3b5c;
+    }
 
     .breath-circle {
       width: 120px;
@@ -184,7 +221,12 @@
       border-bottom: 1px solid #e9edf2;
     }
     .app-header h1 { font-size: 22px; }
-    .user-email { font-size: 14px; color: #64748b; display: block; margin-top: 2px; }
+    .user-email {
+      font-size: 14px;
+      color: #64748b;
+      display: block;
+      margin-top: 2px;
+    }
     .logout-btn {
       background: none;
       border: none;
@@ -193,6 +235,44 @@
       cursor: pointer;
     }
     .logout-btn:hover { color: #ef4444; }
+
+    /* ========== OVERLAY DE CONFIRMAÇÃO ========== */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .overlay.active {
+      display: flex;
+    }
+    .overlay-content {
+      background: white;
+      border-radius: 32px;
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    .overlay-content h3 {
+      margin-bottom: 16px;
+    }
+    .overlay-content .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .overlay-content .btn-group .btn {
+      flex: 1;
+      margin-bottom: 0;
+    }
 
     @media (max-width: 480px) {
       #root { padding: 16px; border-radius: 24px; }
@@ -287,16 +367,16 @@
       <button class="logout-btn" id="btn-logout">Sair</button>
     </div>
     <div class="card-grid">
-      <div class="card">
+      <div class="card" style="cursor:default;">
         <div class="stat-number" id="dash-days">0</div>
         <div class="stat-label">Dias sem fumar</div>
       </div>
-      <div class="card">
+      <div class="card" style="cursor:default;">
         <div class="stat-number" id="dash-money">R$ 0</div>
         <div class="stat-label">Economizados</div>
       </div>
     </div>
-    <div class="card">
+    <div class="card" style="cursor:default;">
       <div class="stat-number" id="dash-cigarettes-avoided">0</div>
       <div class="stat-label">Cigarros não fumados</div>
     </div>
@@ -312,7 +392,17 @@
     </div>
   </div>
 
-  <!-- TELA SOS (RESPIRAÇÃO) -->
+  <!-- TELA DE ESTRATÉGIAS (cardápio) -->
+  <div id="screen-strategies" class="screen">
+    <div class="app-header" style="margin-bottom:12px;">
+      <h2 style="font-size:18px;">🧠 Escolha uma estratégia</h2>
+      <button class="logout-btn" id="btn-strategies-back" style="font-size:14px;">Voltar</button>
+    </div>
+    <p style="font-size:14px; color:#64748b; margin-bottom:16px;">Clique em uma estratégia para tentar vencer a fissura.</p>
+    <div id="strategies-list"></div>
+  </div>
+
+  <!-- TELA SOS (RESPIRAÇÃO GUIADA) -->
   <div id="screen-sos" class="screen flex-center gap-16" style="text-align:center;">
     <h2>🧘 Respire comigo</h2>
     <p>A fissura é como uma onda, ela passa.</p>
@@ -320,10 +410,10 @@
     <p id="breath-text">Inspire lentamente pelo nariz...</p>
     <button class="btn btn-success" id="btn-sos-done">Consegui! Não fumei</button>
     <button class="btn btn-danger" id="btn-sos-fail">Não consegui, fumei</button>
-    <button class="btn btn-outline btn-sm" id="btn-sos-back">Voltar</button>
+    <button class="btn btn-outline btn-sm" id="btn-sos-back">Voltar para estratégias</button>
   </div>
 
-  <!-- REGISTRAR CIGARRO -->
+  <!-- TELA REGISTRAR CIGARRO -->
   <div id="screen-register-cigarette" class="screen">
     <h2>🚬 Registrar cigarro</h2>
     <label>Contexto / Gatilho</label>
@@ -336,7 +426,7 @@
     <button class="btn btn-outline" id="btn-cancel-cigarette">Cancelar</button>
   </div>
 
-  <!-- REGISTRAR FISSURA VENCIDA -->
+  <!-- TELA REGISTRAR FISSURA VENCIDA -->
   <div id="screen-register-craving" class="screen">
     <h2>💪 Venci uma fissura!</h2>
     <label>Gatilho</label>
@@ -345,18 +435,23 @@
     <input type="number" id="craving-intensity" min="0" max="10" value="6" />
     <label>Estratégia usada</label>
     <select id="craving-strategy">
-      <option value="respirar">Respiração</option>
       <option value="agua">Beber água</option>
-      <option value="distracao">Distração</option>
       <option value="caminhar">Caminhar</option>
-      <option value="apoio">Contatar apoio</option>
-      <option value="outro">Outro</option>
+      <option value="apoio">Ligar para apoio</option>
+      <option value="chiclete">Mascar chiclete</option>
+      <option value="banho">Tomar banho</option>
+      <option value="audio">Ouvir áudio</option>
+      <option value="sair">Sair do gatilho</option>
+      <option value="respirar">Respiração guiada</option>
+      <option value="adiar">Adiar por 5 minutos</option>
+      <option value="alongar">Pausa ativa</option>
+      <option value="motivo">Lembrar motivo</option>
     </select>
     <button class="btn btn-success" id="btn-save-craving">Registrar</button>
     <button class="btn btn-outline" id="btn-cancel-craving">Cancelar</button>
   </div>
 
-  <!-- RECAÍDA -->
+  <!-- TELA RECAÍDA -->
   <div id="screen-relapse" class="screen">
     <h2>⚠️ Aconteceu. E tudo bem.</h2>
     <p>Um deslize não apaga todo seu progresso. Vamos aprender com isso.</p>
@@ -372,18 +467,30 @@
     <button class="btn btn-outline" id="btn-cancel-relapse">Voltar</button>
   </div>
 
-  <!-- LIÇÕES -->
+  <!-- TELA LIÇÕES -->
   <div id="screen-lessons" class="screen">
     <h2>📚 Lições de apoio</h2>
     <div id="lessons-list"></div>
     <button class="btn btn-outline" id="btn-lessons-back">Voltar</button>
   </div>
 
-  <!-- HISTÓRICO -->
+  <!-- TELA HISTÓRICO -->
   <div id="screen-history" class="screen">
     <h2>📊 Histórico</h2>
     <div id="history-content"><p>Carregando...</p></div>
     <button class="btn btn-outline" id="btn-history-back">Voltar</button>
+  </div>
+
+  <!-- OVERLAY DE CONFIRMAÇÃO -->
+  <div class="overlay" id="confirmation-overlay">
+    <div class="overlay-content">
+      <h3 id="confirm-title">Usar estratégia?</h3>
+      <p id="confirm-description">Você usou <strong id="confirm-strategy-name"></strong> e conseguiu não fumar?</p>
+      <div class="btn-group">
+        <button class="btn btn-success" id="confirm-yes">Sim, venci!</button>
+        <button class="btn btn-danger" id="confirm-no">Não, fumei</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -411,11 +518,29 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // ============================================================
+// DADOS DAS ESTRATÉGIAS
+// ============================================================
+const strategies = [
+  { id: 'agua', label: 'Beber água', emoji: '💧' },
+  { id: 'caminhar', label: 'Caminhar', emoji: '🚶' },
+  { id: 'apoio', label: 'Ligar para apoio', emoji: '📞' },
+  { id: 'chiclete', label: 'Mascar chiclete', emoji: '🍬' },
+  { id: 'banho', label: 'Tomar banho', emoji: '🚿' },
+  { id: 'audio', label: 'Ouvir áudio relaxante', emoji: '🎧' },
+  { id: 'sair', label: 'Sair do gatilho', emoji: '🚪' },
+  { id: 'respirar', label: 'Respiração guiada', emoji: '🧘' },
+  { id: 'adiar', label: 'Adiar por 5 minutos', emoji: '⏳' },
+  { id: 'alongar', label: 'Pausa ativa (alongar)', emoji: '🤸' },
+  { id: 'motivo', label: 'Lembrar o motivo para parar', emoji: '💪' },
+];
+
+// ============================================================
 // ROTEAMENTO PROTEgIDO
 // ============================================================
 const PROTECTED_SCREENS = [
   'screen-onboarding',
   'screen-dashboard',
+  'screen-strategies',
   'screen-sos',
   'screen-register-cigarette',
   'screen-register-craving',
@@ -657,128 +782,84 @@ async function renderDashboard() {
 }
 
 // ============================================================
-// BOTÕES DE NAVEGAÇÃO
+// BOTÃO SOS - ABRE CARDÁPIO DE ESTRATÉGIAS
 // ============================================================
-
-// SOS
 document.getElementById('btn-sos').addEventListener('click', () => {
   console.log('Botão SOS clicado!');
-  navigateTo('screen-sos');
-  startBreathing();
+  renderStrategies();
+  navigateTo('screen-strategies');
 });
 
-document.getElementById('btn-sos-back').addEventListener('click', () => {
-  if (breathInterval) clearInterval(breathInterval);
-  navigateTo('screen-dashboard');
-});
-
-// Registrar cigarro
-document.getElementById('btn-register-cigarette').addEventListener('click', () => {
-  navigateTo('screen-register-cigarette');
-  document.getElementById('cig-context').value = '';
-  document.getElementById('cig-craving').value = '7';
-  document.getElementById('cig-emotion').value = '';
-});
-
-document.getElementById('btn-cancel-cigarette').addEventListener('click', () => {
-  navigateTo('screen-dashboard');
-});
-
-// Registrar fissura vencida
-document.getElementById('btn-register-craving').addEventListener('click', () => {
-  navigateTo('screen-register-craving');
-  document.getElementById('craving-trigger').value = '';
-  document.getElementById('craving-intensity').value = '6';
-});
-
-document.getElementById('btn-cancel-craving').addEventListener('click', () => {
-  navigateTo('screen-dashboard');
-});
-
-// Recaída
-document.getElementById('btn-relapse').addEventListener('click', () => {
-  navigateTo('screen-relapse');
-  document.getElementById('relapse-place').value = '';
-  document.getElementById('relapse-trigger').value = '';
-  document.getElementById('relapse-feeling').value = '';
-  document.getElementById('relapse-learn').value = '';
-});
-
-document.getElementById('btn-cancel-relapse').addEventListener('click', () => {
-  navigateTo('screen-dashboard');
-});
-
-// Lições
-document.getElementById('btn-go-lessons').addEventListener('click', () => {
-  const container = document.getElementById('lessons-list');
-  container.innerHTML = lessonsData.map((l, i) =>
-    `<div class="card" style="cursor:pointer;" onclick="alert('${l.content}')">
-      <strong>${i+1}. ${l.title}</strong>
+// ============================================================
+// RENDERIZAR ESTRATÉGIAS
+// ============================================================
+function renderStrategies() {
+  const container = document.getElementById('strategies-list');
+  container.innerHTML = strategies.map(s =>
+    `<div class="card" data-strategy-id="${s.id}" style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:24px;">${s.emoji}</span>
+      <span style="font-size:16px; font-weight:500;">${s.label}</span>
     </div>`
   ).join('');
-  navigateTo('screen-lessons');
-});
 
-document.getElementById('btn-lessons-back').addEventListener('click', () => {
-  navigateTo('screen-dashboard');
-});
-
-// ================== HISTÓRICO CORRIGIDO (SEM ÍNDICES) ==================
-document.getElementById('btn-go-history').addEventListener('click', async () => {
-  const container = document.getElementById('history-content');
-  container.innerHTML = 'Carregando...';
-  try {
-    // Busca sem orderBy
-    const logsSnap = await db.collection('cigaretteLogs')
-      .where('userId', '==', currentUser.uid)
-      .get();
-    const cravingsSnap = await db.collection('cravingLogs')
-      .where('userId', '==', currentUser.uid)
-      .get();
-
-    // Converte para array e ordena no frontend
-    let logs = [];
-    logsSnap.forEach(doc => {
-      const d = doc.data();
-      logs.push({ ...d, id: doc.id, timestamp: d.timestamp?.toDate?.() || new Date() });
+  // Adiciona eventos de clique em cada card
+  container.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', function() {
+      const id = this.dataset.strategyId;
+      handleStrategyClick(id);
     });
-    logs.sort((a, b) => b.timestamp - a.timestamp);
-    logs = logs.slice(0, 10);
+  });
+}
 
-    let cravings = [];
-    cravingsSnap.forEach(doc => {
-      const d = doc.data();
-      cravings.push({ ...d, id: doc.id, timestamp: d.timestamp?.toDate?.() || new Date() });
-    });
-    cravings.sort((a, b) => b.timestamp - a.timestamp);
-    cravings = cravings.slice(0, 10);
+// ============================================================
+// LIDAR COM CLIQUE EM ESTRATÉGIA
+// ============================================================
+let selectedStrategyId = null;
 
-    let html = '<h3>Últimos cigarros</h3>';
-    if (logs.length === 0) html += '<p>Nenhum cigarro registrado.</p>';
-    logs.forEach(d => {
-      html += `<div class="card"><strong>${d.context || 'Contexto'}</strong> - Vontade: ${d.craving}/10 - ${d.emotion || ''}</div>`;
-    });
-
-    html += '<h3>Últimas fissuras vencidas</h3>';
-    if (cravings.length === 0) html += '<p>Nenhuma fissura registrada.</p>';
-    cravings.forEach(d => {
-      html += `<div class="card"><strong>${d.trigger || 'Gatilho'}</strong> - Intensidade: ${d.intensity}/10 - Estratégia: ${d.strategyUsed}</div>`;
-    });
-    container.innerHTML = html;
-  } catch (e) {
-    console.error('🔥 ERRO DETALHADO AO CARREGAR HISTÓRICO:', e);
-    container.innerHTML = `<p>Erro: ${e.message || 'Verifique sua conexão.'}</p>`;
+function handleStrategyClick(strategyId) {
+  if (strategyId === 'respirar') {
+    // Abre a tela de respiração guiada
+    navigateTo('screen-sos');
+    startBreathing();
+    return;
   }
-  navigateTo('screen-history');
-});
-// =====================================================================
 
-document.getElementById('btn-history-back').addEventListener('click', () => {
+  // Para outras estratégias, mostra o overlay de confirmação
+  selectedStrategyId = strategyId;
+  const strategy = strategies.find(s => s.id === strategyId);
+  document.getElementById('confirm-strategy-name').textContent = strategy.label;
+  document.getElementById('confirmation-overlay').classList.add('active');
+}
+
+// ============================================================
+// OVERLAY - CONFIRMAR ESTRATÉGIA
+// ============================================================
+document.getElementById('confirm-yes').addEventListener('click', async () => {
+  // Fechar overlay
+  document.getElementById('confirmation-overlay').classList.remove('active');
+  if (!selectedStrategyId) return;
+
+  // Salvar fissura vencida com a estratégia escolhida
+  await saveCravingLog(selectedStrategyId, 6, false);
+  selectedStrategyId = null;
+  navigateTo('screen-dashboard');
+  renderDashboard();
+});
+
+document.getElementById('confirm-no').addEventListener('click', () => {
+  // Fechar overlay e ir para recaída
+  document.getElementById('confirmation-overlay').classList.remove('active');
+  selectedStrategyId = null;
+  navigateTo('screen-relapse');
+});
+
+// Voltar da tela de estratégias
+document.getElementById('btn-strategies-back').addEventListener('click', () => {
   navigateTo('screen-dashboard');
 });
 
 // ============================================================
-// FUNÇÕES AUXILIARES (SOS, salvar, etc.)
+// TELA SOS (RESPIRAÇÃO) - JÁ EXISTENTE
 // ============================================================
 let breathInterval = null;
 
@@ -822,13 +903,22 @@ document.getElementById('btn-sos-fail').addEventListener('click', () => {
   navigateTo('screen-relapse');
 });
 
-async function saveCravingLog(strategy, intensity, smoked) {
+document.getElementById('btn-sos-back').addEventListener('click', () => {
+  if (breathInterval) clearInterval(breathInterval);
+  navigateTo('screen-strategies');
+});
+
+// ============================================================
+// SALVAR FISSURA VENCIDA (genérico)
+// ============================================================
+async function saveCravingLog(strategyId, intensity, smoked) {
+  const strategyLabel = strategies.find(s => s.id === strategyId)?.label || strategyId;
   await db.collection('cravingLogs').add({
     userId: currentUser.uid,
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    trigger: document.getElementById('craving-trigger').value || 'não informado',
+    trigger: 'SOS - ' + strategyLabel,
     intensity: intensity || 6,
-    strategyUsed: strategy || 'respirar',
+    strategyUsed: strategyId,
     smoked: smoked || false
   });
   if (!smoked) {
@@ -839,6 +929,20 @@ async function saveCravingLog(strategy, intensity, smoked) {
     });
   }
 }
+
+// ============================================================
+// BOTÕES DE REGISTRO (Fumei, Venci fissura manual, Recaída)
+// ============================================================
+document.getElementById('btn-register-cigarette').addEventListener('click', () => {
+  navigateTo('screen-register-cigarette');
+  document.getElementById('cig-context').value = '';
+  document.getElementById('cig-craving').value = '7';
+  document.getElementById('cig-emotion').value = '';
+});
+
+document.getElementById('btn-cancel-cigarette').addEventListener('click', () => {
+  navigateTo('screen-dashboard');
+});
 
 document.getElementById('btn-save-cigarette').addEventListener('click', async () => {
   if (!currentUser) {
@@ -857,6 +961,16 @@ document.getElementById('btn-save-cigarette').addEventListener('click', async ()
   });
   navigateTo('screen-dashboard');
   renderDashboard();
+});
+
+document.getElementById('btn-register-craving').addEventListener('click', () => {
+  navigateTo('screen-register-craving');
+  document.getElementById('craving-trigger').value = '';
+  document.getElementById('craving-intensity').value = '6';
+});
+
+document.getElementById('btn-cancel-craving').addEventListener('click', () => {
+  navigateTo('screen-dashboard');
 });
 
 document.getElementById('btn-save-craving').addEventListener('click', async () => {
@@ -884,7 +998,15 @@ document.getElementById('btn-save-craving').addEventListener('click', async () =
   renderDashboard();
 });
 
-document.getElementById('btn-cancel-craving').addEventListener('click', () => {
+document.getElementById('btn-relapse').addEventListener('click', () => {
+  navigateTo('screen-relapse');
+  document.getElementById('relapse-place').value = '';
+  document.getElementById('relapse-trigger').value = '';
+  document.getElementById('relapse-feeling').value = '';
+  document.getElementById('relapse-learn').value = '';
+});
+
+document.getElementById('btn-cancel-relapse').addEventListener('click', () => {
   navigateTo('screen-dashboard');
 });
 
@@ -910,7 +1032,7 @@ document.getElementById('btn-save-relapse').addEventListener('click', async () =
 });
 
 // ============================================================
-// LIÇÕES (hardcoded)
+// LIÇÕES
 // ============================================================
 const lessonsData = [
   { title: 'Conhecendo seus gatilhos', content: 'Identifique o que te leva a fumar.' },
@@ -923,7 +1045,75 @@ const lessonsData = [
   { title: 'Prevenção de recaída', content: 'Planeje situações de risco.' },
 ];
 
-console.log('🚀 App Respira carregado com histórico corrigido (sem índices)!');
+document.getElementById('btn-go-lessons').addEventListener('click', () => {
+  const container = document.getElementById('lessons-list');
+  container.innerHTML = lessonsData.map((l, i) =>
+    `<div class="card" style="cursor:pointer;" onclick="alert('${l.content}')">
+      <strong>${i+1}. ${l.title}</strong>
+    </div>`
+  ).join('');
+  navigateTo('screen-lessons');
+});
+
+document.getElementById('btn-lessons-back').addEventListener('click', () => {
+  navigateTo('screen-dashboard');
+});
+
+// ============================================================
+// HISTÓRICO (sem índices)
+// ============================================================
+document.getElementById('btn-go-history').addEventListener('click', async () => {
+  const container = document.getElementById('history-content');
+  container.innerHTML = 'Carregando...';
+  try {
+    const logsSnap = await db.collection('cigaretteLogs')
+      .where('userId', '==', currentUser.uid)
+      .get();
+    const cravingsSnap = await db.collection('cravingLogs')
+      .where('userId', '==', currentUser.uid)
+      .get();
+
+    let logs = [];
+    logsSnap.forEach(doc => {
+      const d = doc.data();
+      logs.push({ ...d, id: doc.id, timestamp: d.timestamp?.toDate?.() || new Date() });
+    });
+    logs.sort((a, b) => b.timestamp - a.timestamp);
+    logs = logs.slice(0, 10);
+
+    let cravings = [];
+    cravingsSnap.forEach(doc => {
+      const d = doc.data();
+      cravings.push({ ...d, id: doc.id, timestamp: d.timestamp?.toDate?.() || new Date() });
+    });
+    cravings.sort((a, b) => b.timestamp - a.timestamp);
+    cravings = cravings.slice(0, 10);
+
+    let html = '<h3>Últimos cigarros</h3>';
+    if (logs.length === 0) html += '<p>Nenhum cigarro registrado.</p>';
+    logs.forEach(d => {
+      html += `<div class="card" style="cursor:default;"><strong>${d.context || 'Contexto'}</strong> - Vontade: ${d.craving}/10 - ${d.emotion || ''}</div>`;
+    });
+
+    html += '<h3>Últimas fissuras vencidas</h3>';
+    if (cravings.length === 0) html += '<p>Nenhuma fissura registrada.</p>';
+    cravings.forEach(d => {
+      const strategyLabel = strategies.find(s => s.id === d.strategyUsed)?.label || d.strategyUsed || 'não informado';
+      html += `<div class="card" style="cursor:default;"><strong>${d.trigger || 'Gatilho'}</strong> - Intensidade: ${d.intensity}/10 - Estratégia: ${strategyLabel}</div>`;
+    });
+    container.innerHTML = html;
+  } catch (e) {
+    console.error('🔥 ERRO DETALHADO AO CARREGAR HISTÓRICO:', e);
+    container.innerHTML = `<p>Erro: ${e.message || 'Verifique sua conexão.'}</p>`;
+  }
+  navigateTo('screen-history');
+});
+
+document.getElementById('btn-history-back').addEventListener('click', () => {
+  navigateTo('screen-dashboard');
+});
+
+console.log('🚀 App Respira com cardápio de estratégias carregado!');
 </script>
 
 </body>
