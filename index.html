@@ -38,28 +38,26 @@
       width:100%; max-width:480px; margin:0 auto;
       background:transparent;
       min-height:100vh;
-      padding:24px 20px 40px;
+      padding:16px 16px 20px;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
-    .dash-hero-wrap {
+    /* Bloco único: cabeçalho + imagem funcionando como fundo real, sem moldura */
+    .dashboard-hero {
       position:relative;
-      width:calc(100% + 40px);
-      margin:8px -20px 18px -20px;
-      overflow:hidden;
+      width:calc(100% + 32px);
+      margin:-16px -16px 12px -16px;
+      padding:20px 16px 46px;
+      background-image:
+        linear-gradient(180deg, rgba(4,9,16,0.4) 0%, rgba(4,9,16,0.08) 30%, var(--azul-noite) 97%),
+        url('bg-estrelado.png');
+      background-size:cover;
+      background-position:center 40%;
+      background-repeat:no-repeat;
     }
-    .dash-hero {
-      display:block; width:100%; height:210px; object-fit:cover; object-position:center 56%;
+    .dashboard-hero .app-header {
+      border-bottom:none; margin-bottom:6px; padding-bottom:0;
     }
-    .dash-hero-wrap::before {
-      content:''; position:absolute; top:0; left:0; right:0; height:60px;
-      background:linear-gradient(180deg, var(--azul-noite) 0%, rgba(10,20,32,0) 100%);
-      pointer-events:none;
-    }
-    .dash-hero-wrap::after {
-      content:''; position:absolute; left:0; right:0; bottom:0; height:90px;
-      background:linear-gradient(180deg, rgba(10,20,32,0) 0%, var(--azul-noite) 100%);
-      pointer-events:none;
-    }
+    .lung-icon { display:inline-flex; vertical-align:middle; color:var(--azul-acento-2); }
     .spinner-container { display:flex; flex-direction:column; align-items:center; gap:20px; }
     .spinner { width:48px; height:48px; border:6px solid rgba(255,255,255,0.12); border-top:6px solid var(--azul-acento-2); border-radius:50%; animation:spin 1s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
@@ -81,7 +79,7 @@
     input:focus, select:focus { border-color:var(--azul-acento-2); }
     select option { background:#0f1c30; color:var(--texto-claro); }
     label { font-size:14px; font-weight:500; color:var(--texto-medio); display:block; margin-bottom:4px; }
-    .btn { width:100%; padding:16px; border:none; border-radius:16px; font-size:17px; font-weight:600; cursor:pointer; transition:all .2s; margin-bottom:10px; background:var(--azul-card); color:var(--texto-claro); }
+    .btn { width:100%; padding:13px; border:none; border-radius:16px; font-size:16px; font-weight:600; cursor:pointer; transition:all .2s; margin-bottom:8px; background:var(--azul-card); color:var(--texto-claro); }
     .btn-primary { background:var(--azul-acento); color:white; }
     .btn-primary:hover { background:#2f6fe0; }
     .btn-success { background:var(--verde); color:white; }
@@ -92,9 +90,9 @@
       background:var(--azul-card); border:1px solid rgba(255,255,255,0.2); color:var(--texto-claro);
     }
     .btn-outline:hover { background:#16283e; }
-    .btn-sos { background:var(--laranja); color:white; font-size:20px; padding:20px; border-radius:50px; box-shadow:0 8px 24px rgba(245,158,11,0.35); }
+    .btn-sos { background:var(--laranja); color:white; font-size:18px; padding:16px; border-radius:50px; box-shadow:0 8px 24px rgba(245,158,11,0.35); }
     .btn-sos:hover { background:#d97706; transform:scale(1.02); }
-    .btn-sm { padding:10px 16px; font-size:14px; width:auto; display:inline-block; }
+    .btn-sm { padding:9px 14px; font-size:13.5px; width:auto; display:inline-block; }
     /* Botões de ação (Fumei / Venci fissura / Recaída) no estilo contornado da referência */
     #btn-register-cigarette.btn-primary { background:var(--azul-card); border:1.5px solid rgba(93,201,232,0.6); color:var(--azul-acento-2); }
     #btn-register-cigarette.btn-primary:hover { background:#16283e; }
@@ -110,15 +108,15 @@
     .card {
       position:relative;
       background:var(--azul-card);
-      border-radius:20px; padding:18px 16px; margin-bottom:16px;
+      border-radius:18px; padding:13px 14px; margin-bottom:10px;
       border:1px solid var(--azul-card-borda);
       cursor:pointer; transition:all .2s;
     }
     .card:hover { background:#152740; }
-    .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .stat-number { font-size:32px; font-weight:700; color:var(--azul-acento-2); }
-    .stat-label { font-size:13px; color:var(--texto-medio); }
-    .stat-icon { position:absolute; top:16px; right:16px; font-size:18px; opacity:.7; color:var(--azul-acento-2); }
+    .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .stat-number { font-size:27px; font-weight:700; color:var(--azul-acento-2); }
+    .stat-label { font-size:12.5px; color:var(--texto-medio); }
+    .stat-icon { position:absolute; top:13px; right:13px; font-size:16px; opacity:.7; color:var(--azul-acento-2); }
     .flex-center { display:flex; flex-direction:column; align-items:center; text-align:center; }
     .gap-16 { gap:16px; }
     .chip-group { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
@@ -167,7 +165,7 @@
 
   <!-- LOGIN -->
   <div id="screen-login" class="screen">
-    <h1 style="text-align:center;">🫁 Respira</h1>
+    <h1 style="text-align:center; display:flex; align-items:center; justify-content:center; gap:10px;"><svg class="lung-icon" width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L24 21"/><path d="M24 21 C19.5 14.5 11 16.5 9 25 C7 33.5 9.5 41 15 41 C19.5 41 20.5 34.5 20.5 28.5 L20.5 21"/><path d="M24 21 C28.5 14.5 37 16.5 39 25 C41 33.5 38.5 41 33 41 C28.5 41 27.5 34.5 27.5 28.5 L27.5 21"/></svg>Respira</h1>
     <p style="text-align:center; color:#64748b;">Apoio diário para você parar de fumar</p>
     <div style="width:100%; margin-top:24px;">
       <label>E-mail</label>
@@ -253,15 +251,16 @@
 
   <!-- DASHBOARD -->
   <div id="screen-dashboard" class="screen">
-    <div class="app-header">
-      <div>
-        <h1>🫁 Respira</h1>
-        <span class="user-email" id="user-email"></span>
-        <span class="plan-badge" id="plan-badge">Plano: Ativo</span>
+    <div class="dashboard-hero">
+      <div class="app-header">
+        <div>
+          <h1 style="display:flex; align-items:center; gap:8px;"><svg class="lung-icon" width="26" height="26" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L24 21"/><path d="M24 21 C19.5 14.5 11 16.5 9 25 C7 33.5 9.5 41 15 41 C19.5 41 20.5 34.5 20.5 28.5 L20.5 21"/><path d="M24 21 C28.5 14.5 37 16.5 39 25 C41 33.5 38.5 41 33 41 C28.5 41 27.5 34.5 27.5 28.5 L27.5 21"/></svg>Respira</h1>
+          <span class="user-email" id="user-email"></span>
+          <span class="plan-badge" id="plan-badge">Plano: Ativo</span>
+        </div>
+        <button class="logout-btn" id="btn-logout">Sair</button>
       </div>
-      <button class="logout-btn" id="btn-logout">Sair</button>
     </div>
-    <div class="dash-hero-wrap"><img src="bg-estrelado.png" alt="" class="dash-hero" /></div>
     <div class="card-grid">
       <div class="card" style="cursor:default;"><span class="stat-icon">🕐</span><div class="stat-number" id="dash-days">0</div><div class="stat-label">Dias sem fumar</div></div>
       <div class="card" style="cursor:default;"><span class="stat-icon">🐷</span><div class="stat-number" id="dash-money">R$ 0</div><div class="stat-label">Economizados</div></div>
