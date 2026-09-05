@@ -41,10 +41,24 @@
       padding:24px 20px 40px;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
+    .dash-hero-wrap {
+      position:relative;
+      width:calc(100% + 40px);
+      margin:8px -20px 18px -20px;
+      overflow:hidden;
+    }
     .dash-hero {
-      display:block; width:100%; height:180px; object-fit:cover; object-position:center 58%;
-      border-radius:20px; margin:14px 0 18px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.5);
+      display:block; width:100%; height:210px; object-fit:cover; object-position:center 56%;
+    }
+    .dash-hero-wrap::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:60px;
+      background:linear-gradient(180deg, var(--azul-noite) 0%, rgba(10,20,32,0) 100%);
+      pointer-events:none;
+    }
+    .dash-hero-wrap::after {
+      content:''; position:absolute; left:0; right:0; bottom:0; height:90px;
+      background:linear-gradient(180deg, rgba(10,20,32,0) 0%, var(--azul-noite) 100%);
+      pointer-events:none;
     }
     .spinner-container { display:flex; flex-direction:column; align-items:center; gap:20px; }
     .spinner { width:48px; height:48px; border:6px solid rgba(255,255,255,0.12); border-top:6px solid var(--azul-acento-2); border-radius:50%; animation:spin 1s linear infinite; }
@@ -247,7 +261,7 @@
       </div>
       <button class="logout-btn" id="btn-logout">Sair</button>
     </div>
-    <img src="bg-estrelado.png" alt="" class="dash-hero" />
+    <div class="dash-hero-wrap"><img src="bg-estrelado.png" alt="" class="dash-hero" /></div>
     <div class="card-grid">
       <div class="card" style="cursor:default;"><span class="stat-icon">🕐</span><div class="stat-number" id="dash-days">0</div><div class="stat-label">Dias sem fumar</div></div>
       <div class="card" style="cursor:default;"><span class="stat-icon">🐷</span><div class="stat-number" id="dash-money">R$ 0</div><div class="stat-label">Economizados</div></div>
