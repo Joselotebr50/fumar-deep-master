@@ -68,6 +68,14 @@
     .audio-upload .btn { flex:1; min-width:80px; margin-bottom:0; }
     .audio-upload input[type="file"] { display:none; }
     .plan-badge { background:#0b3b5c; color:white; padding:4px 12px; border-radius:50px; font-size:12px; display:inline-block; margin-top:4px; }
+
+    /* Estilos para o sub-app água */
+    .subapp-tela { display:none; }
+    .subapp-tela.active { display:block; }
+    .variacao-btn { display:block; width:100%; margin:8px 0; padding:14px; border-radius:16px; border:2px solid #e2e8f0; background:white; font-size:16px; cursor:pointer; }
+    .variacao-btn:hover { border-color:#3b82f6; }
+    .circulo-respiracao { width:80px; height:80px; border-radius:50%; background:#4CAF50; margin:20px auto; animation:respiracao 8s infinite; }
+    @keyframes respiracao { 0%,100% { transform:scale(1); } 50% { transform:scale(1.5); } }
   </style>
 </head>
 <body>
@@ -204,6 +212,58 @@
     <div id="strategies-list"></div>
   </div>
 
+  <!-- SUB-APP BEBER ÁGUA -->
+  <div id="screen-agua" class="screen">
+    <div class="app-header" style="margin-bottom:12px;">
+      <h2 style="font-size:18px;">💧 Beber Água</h2>
+      <button class="logout-btn" id="btn-agua-sair" style="font-size:14px;">Sair</button>
+    </div>
+    <!-- Etapas -->
+    <div id="agua-tela-abertura" class="subapp-tela active">
+      <p>A fissura dura em média 5 minutos. Vamos beber água juntos.</p>
+      <div id="agua-timer" style="display:none; font-size:24px; font-weight:bold; color:#0b3b5c; text-align:center; margin:16px 0;">05:00</div>
+      <button class="btn btn-primary" onclick="aguaMostrarVariacao()">Começar</button>
+    </div>
+
+    <div id="agua-tela-variacao" class="subapp-tela">
+      <h3>Que água você tem disponível?</h3>
+      <button class="variacao-btn" onclick="aguaSelecionarVariacao('agua_gelada')">Água gelada</button>
+      <button class="variacao-btn" onclick="aguaSelecionarVariacao('agua_temperatura_ambiente')">Temperatura ambiente</button>
+      <button class="variacao-btn" onclick="aguaSelecionarVariacao('agua_com_gas')">Água com gás</button>
+      <button class="variacao-btn" onclick="aguaSelecionarVariacao('cha')">Chá</button>
+    </div>
+
+    <div id="agua-tela-preparacao" class="subapp-tela">
+      <p id="agua-texto-preparacao"></p>
+      <button class="btn btn-primary" onclick="aguaIniciarGoles()">Já estou pronto(a)</button>
+    </div>
+
+    <div id="agua-tela-goles" class="subapp-tela">
+      <p id="agua-texto-gole"></p>
+      <button class="btn btn-primary" id="agua-botao-proximo-gole" onclick="aguaProximoGole()">Próximo gole</button>
+      <button class="btn btn-outline btn-sm" onclick="aguaPularGole()">Pular gole</button>
+      <div id="agua-respiracao" style="display:none; text-align:center; margin-top:20px;">
+        <p>Respire fundo...</p>
+        <div class="circulo-respiracao"></div>
+        <button class="btn btn-success btn-sm" onclick="aguaFinalizarRespiracao()">Continuar</button>
+      </div>
+    </div>
+
+    <div id="agua-tela-registro" class="subapp-tela">
+      <h3>Como está a fissura agora?</h3>
+      <button class="btn btn-danger" onclick="aguaRegistrarFissura('forte')">Forte</button>
+      <button class="btn btn-warning" style="background:#f59e0b; color:white;" onclick="aguaRegistrarFissura('moderada')">Moderada</button>
+      <button class="btn btn-outline" onclick="aguaRegistrarFissura('fraca')">Fraca</button>
+      <button class="btn btn-success" onclick="aguaRegistrarFissura('passou')">Passou</button>
+    </div>
+
+    <div id="agua-tela-encerramento" class="subapp-tela">
+      <p id="agua-mensagem-encerramento"></p>
+      <button class="btn btn-primary" onclick="aguaRepetir()">Repetir atividade</button>
+      <button class="btn btn-outline" onclick="aguaSairParaEstrategias()">Escolher outra atividade</button>
+    </div>
+  </div>
+
   <!-- SOS (respiração) -->
   <div id="screen-sos" class="screen flex-center gap-16" style="text-align:center;">
     <h2>🧘 Respire comigo</h2>
@@ -323,7 +383,7 @@ const db = firebase.firestore();
 const PROTECTED_SCREENS = [
   'screen-onboarding','screen-dashboard','screen-strategies','screen-sos',
   'screen-register-cigarette','screen-register-craving','screen-relapse',
-  'screen-lessons','screen-history'
+  'screen-lessons','screen-history','screen-agua'
 ];
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(el => { el.classList.remove('active'); el.style.display = 'none'; });
@@ -344,6 +404,14 @@ function navigateTo(screenId) {
 // ============================================================
 let currentUser = null, userProfile = null, userQuitPlan = null;
 let selectedTriggers = [], selectedStrategyId = null, breathInterval = null;
+
+// Variáveis do sub-app água
+let aguaSessaoId = null;
+let aguaAtividadeId = null;
+let aguaVariacaoSelecionada = null;
+let aguaGoleAtual = 0;
+let aguaTimerInterval = null;
+let aguaSegundosRestantes = 300;
 
 // ============================================================
 // ÁUDIO - GRAVAÇÃO E UPLOAD
@@ -642,6 +710,11 @@ function renderStrategies() {
   container.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', function() {
       const id = this.dataset.strategyId;
+      if (id === 'agua') {
+        // Abrir sub-app água
+        iniciarSubAppAgua();
+        return;
+      }
       if (id === 'respirar') {
         navigateTo('screen-sos');
         startBreathing();
@@ -656,6 +729,248 @@ function renderStrategies() {
 }
 
 document.getElementById('btn-strategies-back').addEventListener('click', () => navigateTo('screen-dashboard'));
+
+// ============================================================
+// SUB-APP BEBER ÁGUA
+// ============================================================
+function iniciarSubAppAgua() {
+  // Resetar estado
+  aguaSessaoId = null;
+  aguaAtividadeId = null;
+  aguaVariacaoSelecionada = null;
+  aguaGoleAtual = 0;
+  aguaSegundosRestantes = 300;
+  if (aguaTimerInterval) clearInterval(aguaTimerInterval);
+  document.getElementById('agua-timer').style.display = 'none'; // timer oculto por padrão
+  // Mostrar tela do sub-app
+  navigateTo('screen-agua');
+  // Mostrar primeira etapa
+  mostrarEtapaAgua('agua-tela-abertura');
+  // Iniciar timer
+  iniciarTimerAgua();
+  // Criar sessão e atividade
+  criarSessaoEAtividadeAgua();
+}
+
+function mostrarEtapaAgua(id) {
+  document.querySelectorAll('#screen-agua .subapp-tela').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function iniciarTimerAgua() {
+  const timerEl = document.getElementById('agua-timer');
+  if (timerEl.style.display === 'none') return; // timer oculto
+  aguaTimerInterval = setInterval(() => {
+    aguaSegundosRestantes--;
+    const min = Math.floor(aguaSegundosRestantes / 60);
+    const seg = aguaSegundosRestantes % 60;
+    timerEl.innerText = `${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
+    if (aguaSegundosRestantes <= 0) clearInterval(aguaTimerInterval);
+  }, 1000);
+}
+
+function pararTimerAgua() {
+  if (aguaTimerInterval) clearInterval(aguaTimerInterval);
+}
+
+async function criarSessaoEAtividadeAgua() {
+  if (!currentUser) return;
+  const uid = currentUser.uid;
+  const sessaoRef = db.collection('usuarios').doc(uid).collection('sessoes_sos').doc();
+  aguaSessaoId = sessaoRef.id;
+  await sessaoRef.set({
+    data_hora_inicio: firebase.firestore.FieldValue.serverTimestamp(),
+    status: 'em_andamento'
+  });
+  const atividadeRef = sessaoRef.collection('atividades').doc();
+  aguaAtividadeId = atividadeRef.id;
+  await atividadeRef.set({
+    tipo: 'beber_agua',
+    variacao: null,
+    data_hora_inicio: firebase.firestore.FieldValue.serverTimestamp(),
+    concluida: false
+  });
+}
+
+function aguaMostrarVariacao() {
+  mostrarEtapaAgua('agua-tela-variacao');
+}
+
+async function aguaSelecionarVariacao(variacao) {
+  aguaVariacaoSelecionada = variacao;
+  // Atualizar atividade no Firestore
+  if (aguaSessaoId && aguaAtividadeId && currentUser) {
+    const atividadeRef = db.collection('usuarios').doc(currentUser.uid)
+      .collection('sessoes_sos').doc(aguaSessaoId)
+      .collection('atividades').doc(aguaAtividadeId);
+    await atividadeRef.update({ variacao: variacao });
+  }
+  // Texto de preparação
+  const textos = {
+    agua_gelada: 'Pegue um copo e encha com água gelada.',
+    agua_temperatura_ambiente: 'Pegue um copo e encha com água em temperatura ambiente.',
+    agua_com_gas: 'Pegue um copo e sirva água com gás.',
+    cha: 'Prepare uma xícara de chá com calma.'
+  };
+  document.getElementById('agua-texto-preparacao').innerText = textos[variacao];
+  mostrarEtapaAgua('agua-tela-preparacao');
+}
+
+function aguaIniciarGoles() {
+  aguaGoleAtual = 1;
+  mostrarGoleAgua(aguaGoleAtual);
+  mostrarEtapaAgua('agua-tela-goles');
+}
+
+function mostrarGoleAgua(numero) {
+  const instrucoes = {
+    agua_gelada: [
+      'Gole 1: Segure o copo e sinta a temperatura fria na mão.',
+      'Gole 2: Tome um gole pequeno e sinta o frio na boca e na garganta.',
+      'Gole 3: Tome o último gole devagar. Perceba o frescor se espalhando.'
+    ],
+    agua_temperatura_ambiente: [
+      'Gole 1: Observe a água no copo.',
+      'Gole 2: Tome um gole e sinta a textura.',
+      'Gole 3: Beba o restante com calma.'
+    ],
+    agua_com_gas: [
+      'Gole 1: Observe as bolhas no copo.',
+      'Gole 2: Tome um gole e sinta a efervescência.',
+      'Gole 3: Termine a água e perceba a sensação.'
+    ],
+    cha: [
+      'Gole 1: Segure a xícara com as duas mãos e sinta o calor.',
+      'Gole 2: Assopre levemente e tome um gole pequeno.',
+      'Gole 3: Tome o último gole e perceba o conforto.'
+    ]
+  };
+  document.getElementById('agua-texto-gole').innerText = instrucoes[aguaVariacaoSelecionada][numero-1];
+  document.getElementById('agua-respiracao').style.display = 'none';
+  // Registrar etapa (início)
+  registrarEtapaAgua(numero, 'inicio');
+}
+
+async function registrarEtapaAgua(numero, tipo) {
+  if (!aguaSessaoId || !aguaAtividadeId || !currentUser) return;
+  const etapaRef = db.collection('usuarios').doc(currentUser.uid)
+    .collection('sessoes_sos').doc(aguaSessaoId)
+    .collection('atividades').doc(aguaAtividadeId)
+    .collection('etapas').doc(`etapa_${numero}`);
+  if (tipo === 'inicio') {
+    await etapaRef.set({
+      numero: numero,
+      timestamp_inicio: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } else {
+    await etapaRef.update({
+      timestamp_fim: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+}
+
+async function aguaProximoGole() {
+  // Registrar fim do gole atual
+  await registrarEtapaAgua(aguaGoleAtual, 'fim');
+  if (aguaGoleAtual < 3) {
+    // Mostrar respiração
+    document.getElementById('agua-respiracao').style.display = 'block';
+    // Não avançar ainda; aguardar clique em "Continuar"
+  } else {
+    // Todos os goles concluídos
+    mostrarEtapaAgua('agua-tela-registro');
+  }
+}
+
+function aguaFinalizarRespiracao() {
+  document.getElementById('agua-respiracao').style.display = 'none';
+  aguaGoleAtual++;
+  mostrarGoleAgua(aguaGoleAtual);
+}
+
+function aguaPularGole() {
+  // Pular gole sem registrar
+  if (aguaGoleAtual < 3) {
+    aguaGoleAtual++;
+    mostrarGoleAgua(aguaGoleAtual);
+  } else {
+    mostrarEtapaAgua('agua-tela-registro');
+  }
+}
+
+async function aguaRegistrarFissura(intensidade) {
+  // Salvar registro de fissura
+  if (aguaSessaoId && currentUser) {
+    const registroRef = db.collection('usuarios').doc(currentUser.uid)
+      .collection('sessoes_sos').doc(aguaSessaoId)
+      .collection('registro_fissura').doc();
+    await registroRef.set({
+      intensidade: intensidade,
+      data_hora: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+  // Atualizar atividade
+  if (aguaSessaoId && aguaAtividadeId && currentUser) {
+    const atividadeRef = db.collection('usuarios').doc(currentUser.uid)
+      .collection('sessoes_sos').doc(aguaSessaoId)
+      .collection('atividades').doc(aguaAtividadeId);
+    await atividadeRef.update({
+      concluida: true,
+      data_hora_fim: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+  // Atualizar sessão
+  if (aguaSessaoId && currentUser) {
+    const sessaoRef = db.collection('usuarios').doc(currentUser.uid)
+      .collection('sessoes_sos').doc(aguaSessaoId);
+    await sessaoRef.update({
+      status: 'concluida',
+      data_hora_fim: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+
+  // Também registrar no cravingLogs (para manter compatibilidade com histórico)
+  await saveCravingLog('agua', intensidade === 'passou' ? 2 : intensidade === 'fraca' ? 4 : intensidade === 'moderada' ? 6 : 8, false);
+
+  // Mensagem de encerramento
+  const mensagem = intensidade === 'passou' || intensidade === 'fraca'
+    ? 'Você cuidou de si. A fissura perde força cada vez que você resiste.'
+    : 'Que tal tentar outra atividade para complementar?';
+  document.getElementById('agua-mensagem-encerramento').innerText = mensagem;
+  mostrarEtapaAgua('agua-tela-encerramento');
+  pararTimerAgua();
+}
+
+function aguaRepetir() {
+  // Reiniciar com nova atividade na mesma sessão
+  criarNovaAtividadeAgua();
+  aguaMostrarVariacao();
+}
+
+async function criarNovaAtividadeAgua() {
+  if (!aguaSessaoId || !currentUser) return;
+  const atividadeRef = db.collection('usuarios').doc(currentUser.uid)
+    .collection('sessoes_sos').doc(aguaSessaoId)
+    .collection('atividades').doc();
+  aguaAtividadeId = atividadeRef.id;
+  await atividadeRef.set({
+    tipo: 'beber_agua',
+    variacao: null,
+    data_hora_inicio: firebase.firestore.FieldValue.serverTimestamp(),
+    concluida: false
+  });
+}
+
+function aguaSairParaEstrategias() {
+  // Voltar para lista de estratégias
+  navigateTo('screen-strategies');
+}
+
+// Botão "Sair" do sub-app
+document.getElementById('btn-agua-sair').addEventListener('click', () => {
+  pararTimerAgua();
+  navigateTo('screen-strategies');
+});
 
 // ============================================================
 // CONFIRMAÇÃO (overlay) - CORRIGIDO
@@ -861,7 +1176,7 @@ document.getElementById('btn-go-history').addEventListener('click', async () => 
 });
 document.getElementById('btn-history-back').addEventListener('click', () => navigateTo('screen-dashboard'));
 
-console.log('🚀 App com correção no registro de cigarros (SOS) carregado!');
+console.log('🚀 App com sub-app Beber Água integrado!');
 </script>
 </body>
 </html>
