@@ -32,30 +32,31 @@
       color:var(--texto-claro);
       min-height:100vh;
       margin:0;
-      background:linear-gradient(180deg, var(--azul-noite) 0%, var(--azul-noite-2) 100%);
+      background-image:
+        linear-gradient(180deg, rgba(4,9,16,0.55) 0%, rgba(4,9,16,0.32) 22%, rgba(4,9,16,0.5) 55%, rgba(4,9,16,0.8) 100%),
+        url('bg-estrelado.png');
+      background-size:cover;
+      background-position:center 30%;
+      background-repeat:no-repeat;
+      background-attachment:fixed;
     }
     #root {
       width:100%; max-width:480px; margin:0 auto;
       background:transparent;
       min-height:100vh;
-      padding:16px 16px 20px;
+      padding:20px 18px 28px;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
-    /* Bloco único: cabeçalho + imagem funcionando como fundo real, sem moldura */
-    .dashboard-hero {
-      position:relative;
-      width:calc(100% + 32px);
-      margin:-16px -16px 12px -16px;
-      padding:20px 16px 46px;
-      background-image:
-        linear-gradient(180deg, rgba(4,9,16,0.4) 0%, rgba(4,9,16,0.08) 30%, var(--azul-noite) 97%),
-        url('bg-estrelado.png');
-      background-size:cover;
-      background-position:center 40%;
-      background-repeat:no-repeat;
-    }
+    /* Cabeçalho fica sobre a imagem de fundo (que agora cobre a tela toda) */
+    .dashboard-hero { margin-bottom:16px; }
     .dashboard-hero .app-header {
-      border-bottom:none; margin-bottom:6px; padding-bottom:0;
+      border-bottom:none; margin-bottom:0; padding-bottom:0;
+    }
+    .dashboard-hero .app-header h1,
+    .dashboard-hero .app-header .user-email,
+    .dashboard-hero .plan-badge,
+    .dashboard-hero .logout-btn {
+      text-shadow:0 2px 10px rgba(0,0,0,0.7);
     }
     .lung-icon { display:inline-flex; vertical-align:middle; color:var(--azul-acento-2); }
     .spinner-container { display:flex; flex-direction:column; align-items:center; gap:20px; }
@@ -79,7 +80,7 @@
     input:focus, select:focus { border-color:var(--azul-acento-2); }
     select option { background:#0f1c30; color:var(--texto-claro); }
     label { font-size:14px; font-weight:500; color:var(--texto-medio); display:block; margin-bottom:4px; }
-    .btn { width:100%; padding:13px; border:none; border-radius:16px; font-size:16px; font-weight:600; cursor:pointer; transition:all .2s; margin-bottom:8px; background:var(--azul-card); color:var(--texto-claro); }
+    .btn { width:100%; padding:15px; border:none; border-radius:16px; font-size:16.5px; font-weight:600; cursor:pointer; transition:all .2s; margin-bottom:10px; background:var(--azul-card); color:var(--texto-claro); }
     .btn-primary { background:var(--azul-acento); color:white; }
     .btn-primary:hover { background:#2f6fe0; }
     .btn-success { background:var(--verde); color:white; }
@@ -90,9 +91,9 @@
       background:var(--azul-card); border:1px solid rgba(255,255,255,0.2); color:var(--texto-claro);
     }
     .btn-outline:hover { background:#16283e; }
-    .btn-sos { background:var(--laranja); color:white; font-size:18px; padding:16px; border-radius:50px; box-shadow:0 8px 24px rgba(245,158,11,0.35); }
+    .btn-sos { background:var(--laranja); color:white; font-size:19px; padding:18px; border-radius:50px; box-shadow:0 8px 24px rgba(245,158,11,0.35); }
     .btn-sos:hover { background:#d97706; transform:scale(1.02); }
-    .btn-sm { padding:9px 14px; font-size:13.5px; width:auto; display:inline-block; }
+    .btn-sm { padding:11px 16px; font-size:14px; width:auto; display:inline-block; }
     /* Botões de ação (Fumei / Venci fissura / Recaída) no estilo contornado da referência */
     #btn-register-cigarette.btn-primary { background:var(--azul-card); border:1.5px solid rgba(93,201,232,0.6); color:var(--azul-acento-2); }
     #btn-register-cigarette.btn-primary:hover { background:#16283e; }
@@ -108,15 +109,15 @@
     .card {
       position:relative;
       background:var(--azul-card);
-      border-radius:18px; padding:13px 14px; margin-bottom:10px;
+      border-radius:20px; padding:16px; margin-bottom:14px;
       border:1px solid var(--azul-card-borda);
       cursor:pointer; transition:all .2s;
     }
     .card:hover { background:#152740; }
-    .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .stat-number { font-size:27px; font-weight:700; color:var(--azul-acento-2); }
-    .stat-label { font-size:12.5px; color:var(--texto-medio); }
-    .stat-icon { position:absolute; top:13px; right:13px; font-size:16px; opacity:.7; color:var(--azul-acento-2); }
+    .card-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .stat-number { font-size:30px; font-weight:700; color:var(--azul-acento-2); }
+    .stat-label { font-size:13px; color:var(--texto-medio); }
+    .stat-icon { position:absolute; top:15px; right:15px; font-size:17px; opacity:.7; color:var(--azul-acento-2); }
     .flex-center { display:flex; flex-direction:column; align-items:center; text-align:center; }
     .gap-16 { gap:16px; }
     .chip-group { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
